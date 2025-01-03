@@ -1,3 +1,6 @@
+/* 
+    Create a new window
+ */
 class createGrepoWindow {
     constructor({ id, title, size, tabs, start_tab, minimizable = true }) {
         this.minimizable = minimizable;
@@ -66,7 +69,6 @@ class createGrepoWindow {
             let content = `<ul id="${this.id}" class="menu_inner"></ul><div id="${this.id}_content"> </div>`;
             uw.Layout.wnd.Create(uw.GPWindowMgr[`TYPE_${this.id}`]).setContent(content);
             /* Add and reder tabs */
-            console.log(this.tabs);
             this.tabs.forEach((e) => {
                 let html = `
                     <li><a id="${e.id}" class="submenu_link" href="#"><span class="left"><span class="right"><span class="middle">

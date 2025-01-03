@@ -14,9 +14,9 @@
 
 var uw;
 if (typeof unsafeWindow == 'undefined') {
-	uw = window;
+    uw = window;
 } else {
-	uw = unsafeWindow;
+    uw = unsafeWindow;
 }
 
 var style = document.createElement("style");
@@ -284,125 +284,125 @@ class ModernUtil {
 
 // TO BE FINISCHED
 class About {
-	constructor() {
-		this.checkVersion();
-	}
+    constructor() {
+        this.checkVersion();
+    }
 
-	settings = () => {};
+    settings = () => { };
 
-	checkVersion = async () => {
-		if (!GM_info) return;
+    checkVersion = async () => {
+        if (!GM_info) return;
 
-		/* Check that the version it's the current one */
-		const installedVersion = GM_info.script.version;
-		const file = await fetch('https://raw.githubusercontent.com/Sau1707/ModernBot/main/version.txt');
-		const lastVersion = await file.text();
+        /* Check that the version it's the current one */
+        const installedVersion = GM_info.script.version;
+        const file = await fetch('https://raw.githubusercontent.com/Sau1707/ModernBot/main/version.txt');
+        const lastVersion = await file.text();
 
-		if (lastVersion != installedVersion) {
-			console.log('Versions differents');
-		}
-		console.log(lastVersion, installedVersion);
-	};
+        if (lastVersion != installedVersion) {
+            console.log('Versions differents');
+        }
+        console.log(lastVersion, installedVersion);
+    };
 }
 
 class AntiRage extends ModernUtil {
-	GOODS_ICONS = {
-		athena: 'js-power-icon.animated_power_icon.animated_power_icon_45x45.power_icon45x45.power.strength_of_heroes',
-		zeus: 'js-power-icon.animated_power_icon.animated_power_icon_45x45.power_icon45x45.power.fair_wind',
-		artemis: 'js-power-icon.animated_power_icon.animated_power_icon_45x45.power_icon45x45.power.effort_of_the_huntress',
-	};
+    GOODS_ICONS = {
+        athena: 'js-power-icon.animated_power_icon.animated_power_icon_45x45.power_icon45x45.power.strength_of_heroes',
+        zeus: 'js-power-icon.animated_power_icon.animated_power_icon_45x45.power_icon45x45.power.fair_wind',
+        artemis: 'js-power-icon.animated_power_icon.animated_power_icon_45x45.power_icon45x45.power.effort_of_the_huntress',
+    };
 
-	constructor(c, s) {
-		super(c, s);
+    constructor(c, s) {
+        super(c, s);
 
-		this.loop_funct = null;
-		this.active_god_el = null;
+        this.loop_funct = null;
+        this.active_god_el = null;
 
-		let commandId;
-		const oldCreate = GPWindowMgr.Create;
-		GPWindowMgr.Create = function (type, title, params, id) {
-			if (type === GPWindowMgr.TYPE_ATK_COMMAND && id) commandId = id;
-			return oldCreate.apply(this, arguments);
-		};
+        let commandId;
+        const oldCreate = GPWindowMgr.Create;
+        GPWindowMgr.Create = function (type, title, params, id) {
+            if (type === GPWindowMgr.TYPE_ATK_COMMAND && id) commandId = id;
+            return oldCreate.apply(this, arguments);
+        };
 
-		/* Attach event to attack opening */
-		uw.$.Observer(uw.GameEvents.window.open).subscribe((e, data) => {
-			if (data.context != 'atk_command') return;
-			//const id = data.wnd.getID();
+        /* Attach event to attack opening */
+        uw.$.Observer(uw.GameEvents.window.open).subscribe((e, data) => {
+            if (data.context != 'atk_command') return;
+            //const id = data.wnd.getID();
 
-			let max = 10;
-			const addSpell = () => {
-				let spellMenu = $('#command_info-god')[0];
-				if (!spellMenu) {
-					if (max > 0) {
-						max -= 1;
-						setTimeout(addSpell, 50);
-					}
-					return;
-				}
-				$(spellMenu).on('click', this.trigger);
+            let max = 10;
+            const addSpell = () => {
+                let spellMenu = $('#command_info-god')[0];
+                if (!spellMenu) {
+                    if (max > 0) {
+                        max -= 1;
+                        setTimeout(addSpell, 50);
+                    }
+                    return;
+                }
+                $(spellMenu).on('click', this.trigger);
 
-				this.command_id = commandId;
-			};
+                this.command_id = commandId;
+            };
 
-			setTimeout(addSpell, 50);
-		});
-	}
+            setTimeout(addSpell, 50);
+        });
+    }
 
-	handleGod = good => {
-		const godEl = $(`.god_mini.${good}.${good}`).eq(0);
-		if (!godEl.length) return;
+    handleGod = good => {
+        const godEl = $(`.god_mini.${good}.${good}`).eq(0);
+        if (!godEl.length) return;
 
-		const powerClassName = this.GOODS_ICONS[good];
+        const powerClassName = this.GOODS_ICONS[good];
 
-		godEl.css({
-			zIndex: 10,
-			cursor: 'pointer',
-			borderRadius: '100%',
-			outline: 'none',
-			boxShadow: '0px 0px 10px 5px rgba(255, 215, 0, 0.5)',
-		});
+        godEl.css({
+            zIndex: 10,
+            cursor: 'pointer',
+            borderRadius: '100%',
+            outline: 'none',
+            boxShadow: '0px 0px 10px 5px rgba(255, 215, 0, 0.5)',
+        });
 
-		const powerEl = $(`.${powerClassName}`).eq(0);
-		if (!powerEl.length) return;
+        const powerEl = $(`.${powerClassName}`).eq(0);
+        if (!powerEl.length) return;
 
-		godEl.click(() => {
-			// deactivate the previously active god
+        godEl.click(() => {
+            // deactivate the previously active god
 
-			if (this.active_god_el && this.active_god_el.get(0) === godEl.get(0)) {
-				clearInterval(this.loop_funct);
-				this.loop_funct = null;
-				this.setColor(this.active_god_el.get(0), false);
-				this.active_god_el = null;
-				return;
-			}
+            if (this.active_god_el && this.active_god_el.get(0) === godEl.get(0)) {
+                clearInterval(this.loop_funct);
+                this.loop_funct = null;
+                this.setColor(this.active_god_el.get(0), false);
+                this.active_god_el = null;
+                return;
+            }
 
-			if (this.active_god_el && this.active_god_el.get(0) !== godEl.get(0)) {
-				clearInterval(this.loop_funct);
-				this.setColor(this.active_god_el.get(0), false);
-			}
+            if (this.active_god_el && this.active_god_el.get(0) !== godEl.get(0)) {
+                clearInterval(this.loop_funct);
+                this.setColor(this.active_god_el.get(0), false);
+            }
 
-			this.loop_funct = setInterval(this.clicker, 1000, powerEl);
-			this.active_god_el = godEl;
-			this.setColor(godEl.get(0), true);
-		});
-	};
+            this.loop_funct = setInterval(this.clicker, 1000, powerEl);
+            this.active_god_el = godEl;
+            this.setColor(godEl.get(0), true);
+        });
+    };
 
-	setColor = (elm, apply) => {
-		if (apply) {
-			elm.style.filter = 'brightness(100%) sepia(100%) hue-rotate(90deg) saturate(1500%) contrast(0.8)';
-		} else {
-			elm.style.filter = '';
-		}
-	};
+    setColor = (elm, apply) => {
+        if (apply) {
+            elm.style.filter = 'brightness(100%) sepia(100%) hue-rotate(90deg) saturate(1500%) contrast(0.8)';
+        } else {
+            elm.style.filter = '';
+        }
+    };
 
-	trigger = () => {
-		setTimeout(() => {
-			this.handleGod('athena');
-			this.handleGod('zeus');
-			this.handleGod('artemis');
+    trigger = () => {
+        setTimeout(() => {
+            this.handleGod('athena');
+            this.handleGod('zeus');
+            this.handleGod('artemis');
 
-			$('.js-god-box[data-god_id="zeus"]').find('.powers').append(`
+            $('.js-god-box[data-god_id="zeus"]').find('.powers').append(`
             <div id="enchanted_rage" class="js-power-icon animated_power_icon animated_power_icon_45x45 power_icon45x45 power transformation" style="filter: brightness(70%) sepia(104%) hue-rotate(14deg) saturate(1642%) contrast(0.8)">
                 <div class="extend_spell">
                     <div class="gold"></div>
@@ -411,7 +411,7 @@ class AntiRage extends ModernUtil {
             </div>
             `);
 
-			const html = `
+            const html = `
             <table class="popup" id="popup_div" cellpadding="0" cellspacing="0" style="display: block; left: 243px; top: 461px; opacity: 1; position: absolute; z-index: 6001; width: auto; max-width: 400px;">
                 <tbody>
                     <tr class="popup_top">
@@ -426,7 +426,7 @@ class AntiRage extends ModernUtil {
                                 <div class="temple_power_popup_image power_icon86x86 transformation" style="filter: brightness(70%) sepia(104%) hue-rotate(14deg) saturate(1642%) contrast(0.8)"></div>
                                 <div class="temple_power_popup_info">
                                     <h4>Enchanted Rage</h4>
-                                    <p> An Enchanted version of the normal rage </p> 
+                                    <p> An Enchanted version of the normal rage </p>
                                     <p> Made for who try to troll with the autoclick </p>
                                     <p><b> Cast Purification and Rage at the same time </b></p>
                                     <div class="favor_cost_info">
@@ -446,7 +446,7 @@ class AntiRage extends ModernUtil {
                 </tbody>
             </table>`;
 
-			const default_popup = `
+            const default_popup = `
             <table class="popup" id="popup_div" cellpadding="0" cellspacing="0" style="display: none; opacity: 0;">
 	    	    <tbody><tr class="popup_top">
 	    	    	<td class="popup_top_left"></td>
@@ -466,108 +466,108 @@ class AntiRage extends ModernUtil {
  	            </tbody>
             </table>`;
 
-			const { artemis_favor, zeus_favor } = uw.ITowns.player_gods.attributes;
-			const enable = artemis_favor >= 200 && zeus_favor >= 300;
-			if (!enable) $('#enchanted_rage').css('filter', 'grayscale(1)');
+            const { artemis_favor, zeus_favor } = uw.ITowns.player_gods.attributes;
+            const enable = artemis_favor >= 200 && zeus_favor >= 300;
+            if (!enable) $('#enchanted_rage').css('filter', 'grayscale(1)');
 
-			// TODO: disable if not enable
-			$('#enchanted_rage').on({
-				click: () => {
-					if (!enable) return;
-					this.enchanted('zeus');
-				},
-				mouseenter: event => {
-					$('#popup_div_curtain').html(html);
-					const $popupDiv = $('#popup_div');
-					const offset = $popupDiv.offset();
-					const height = $popupDiv.outerHeight();
-					const width = $popupDiv.outerWidth();
-					const left = event.pageX + 10;
-					const top = event.pageY + 10;
-					if (left + width > $(window).width()) {
-						offset.left -= width;
-					} else {
-						offset.left = left;
-					}
-					if (top + height > $(window).height()) {
-						offset.top -= height;
-					} else {
-						offset.top = top;
-					}
-					$popupDiv.css({
-						left: offset.left + 'px',
-						top: offset.top + 'px',
-						display: 'block',
-					});
-				},
-				mousemove: event => {
-					const $popupDiv = $('#popup_div');
-					if ($popupDiv.is(':visible')) {
-						const offset = $popupDiv.offset();
-						const height = $popupDiv.outerHeight();
-						const width = $popupDiv.outerWidth();
-						const left = event.pageX + 10;
-						const top = event.pageY + 10;
-						if (left + width > $(window).width()) {
-							offset.left -= width;
-						} else {
-							offset.left = left;
-						}
-						if (top + height > $(window).height()) {
-							offset.top -= height;
-						} else {
-							offset.top = top;
-						}
-						$popupDiv.css({
-							left: offset.left + 'px',
-							top: offset.top + 'px',
-						});
-					}
-				},
-				mouseleave: () => {
-					$('#popup_div_curtain').html(default_popup);
-				},
-			});
-		}, 100);
-	};
+            // TODO: disable if not enable
+            $('#enchanted_rage').on({
+                click: () => {
+                    if (!enable) return;
+                    this.enchanted('zeus');
+                },
+                mouseenter: event => {
+                    $('#popup_div_curtain').html(html);
+                    const $popupDiv = $('#popup_div');
+                    const offset = $popupDiv.offset();
+                    const height = $popupDiv.outerHeight();
+                    const width = $popupDiv.outerWidth();
+                    const left = event.pageX + 10;
+                    const top = event.pageY + 10;
+                    if (left + width > $(window).width()) {
+                        offset.left -= width;
+                    } else {
+                        offset.left = left;
+                    }
+                    if (top + height > $(window).height()) {
+                        offset.top -= height;
+                    } else {
+                        offset.top = top;
+                    }
+                    $popupDiv.css({
+                        left: offset.left + 'px',
+                        top: offset.top + 'px',
+                        display: 'block',
+                    });
+                },
+                mousemove: event => {
+                    const $popupDiv = $('#popup_div');
+                    if ($popupDiv.is(':visible')) {
+                        const offset = $popupDiv.offset();
+                        const height = $popupDiv.outerHeight();
+                        const width = $popupDiv.outerWidth();
+                        const left = event.pageX + 10;
+                        const top = event.pageY + 10;
+                        if (left + width > $(window).width()) {
+                            offset.left -= width;
+                        } else {
+                            offset.left = left;
+                        }
+                        if (top + height > $(window).height()) {
+                            offset.top -= height;
+                        } else {
+                            offset.top = top;
+                        }
+                        $popupDiv.css({
+                            left: offset.left + 'px',
+                            top: offset.top + 'px',
+                        });
+                    }
+                },
+                mouseleave: () => {
+                    $('#popup_div_curtain').html(default_popup);
+                },
+            });
+        }, 100);
+    };
 
-	clicker = el => {
-		let check = $('.js-power-icon.animated_power_icon.animated_power_icon_45x45.power_icon45x45.power').eq(0);
-		if (!check.length) {
-			clearInterval(this.loop_funct);
-			this.loop_funct = null;
-			this.active_god_el = null;
-			return;
-		}
-		el.click();
-		let delta_time = 500;
-		let rand = 500 + Math.floor(Math.random() * delta_time);
-		clearInterval(this.loop_funct);
-		this.loop_funct = setInterval(this.clicker, rand, el);
-	};
+    clicker = el => {
+        let check = $('.js-power-icon.animated_power_icon.animated_power_icon_45x45.power_icon45x45.power').eq(0);
+        if (!check.length) {
+            clearInterval(this.loop_funct);
+            this.loop_funct = null;
+            this.active_god_el = null;
+            return;
+        }
+        el.click();
+        let delta_time = 500;
+        let rand = 500 + Math.floor(Math.random() * delta_time);
+        clearInterval(this.loop_funct);
+        this.loop_funct = setInterval(this.clicker, rand, el);
+    };
 
-	enchanted = async type => {
-		if (type === 'zeus') {
-			this.cast(this.command_id, 'cleanse');
-			//await this.sleep(1);
-			this.cast(this.command_id, 'transformation');
-		}
-	};
+    enchanted = async type => {
+        if (type === 'zeus') {
+            this.cast(this.command_id, 'cleanse');
+            //await this.sleep(1);
+            this.cast(this.command_id, 'transformation');
+        }
+    };
 
-	cast = (id, type) => {
-		let data = {
-			model_url: 'Commands',
-			action_name: 'cast',
-			arguments: {
-				id: id,
-				power_id: type,
-			},
-		};
-		uw.gpAjax.ajaxPost('frontend_bridge', 'execute', data);
-	};
+    cast = (id, type) => {
+        let data = {
+            model_url: 'Commands',
+            action_name: 'cast',
+            arguments: {
+                id: id,
+                power_id: type,
+            },
+        };
+        uw.gpAjax.ajaxPost('frontend_bridge', 'execute', data);
+    };
 }
 
-/* 
+/*
 
 <div id="popup_div_curtain">
     <table class="popup" id="popup_div" cellpadding="0" cellspacing="0" style="display: block; left: 243px; top: 461px; opacity: 1; position: absolute; z-index: 6001; width: auto; max-width: 400px;">
@@ -581,13 +581,13 @@ class AntiRage extends ModernUtil {
             <td class="popup_middle_middle" id="popup_content" style="width: auto;"><div>
 
 <div class="temple_power_popup ">
-	
+
     <div class="temple_power_popup_image power_icon86x86 fair_wind"></div>
 
     <div class="temple_power_popup_info">
         <h4>Vento favorevole</h4>
         <p>La voce di Zeus risuona nell'aria, il vento fa gonfiare le vele delle navi e frecce e dardi sibilanti vengono lanciati con precisione verso il nemico.</p>
-    	
+
             <p><b>Le forze navali attaccanti ottengono un bonus del 10% alla loro forza durante il loro prossimo attacco.</b></p>
                     <div class="favor_cost_info">
                         <div class="resource_icon favor"></div>
@@ -839,12 +839,14 @@ class AutoBuild extends ModernUtil {
             if (this.simulateCaptcha || $('.botcheck').length || $('#recaptcha_window').length) {
                 if (!this.captchaActive) {
                     this.console.log('Captcha active, autobuild stopped working');
+                    this.startBeep(); // Inicia o beep repetitivo
                     clearInterval(this.interval);
                     this.captchaActive = true;
                 }
             } else {
                 if (this.captchaActive) {
                     this.console.log('Captcha resolved, autobuild resumed');
+                    this.stopBeep(); // Para o beep
                     this.startInterval(); // Restart autobuild
                     this.captchaActive = false;
                 }
@@ -853,7 +855,27 @@ class AutoBuild extends ModernUtil {
     }
 
     startInterval() {
-        this.interval = setInterval(this.main.bind(this), 20000);
+        this.interval = setInterval(this.main.bind(this), 300);
+    }
+
+    beepCaptcha() {
+        var snd = new Audio("data:audio/wav;base64,//uQRAAAAWMSLwUIYAAsYkXgoQwAEaYLWfkWgAI0wWs/ItAAAGDgYtAgAyN+QWaAAihwMWm4G8QQRDiMcCBcH3Cc+CDv/7xA4Tvh9Rz/y8QADBwMWgQAZG/ILNAARQ4GLTcDeIIIhxGOBAuD7hOfBB3/94gcJ3w+o5/5eIAIAAAVwWgQAVQ2ORaIQwEMAJiDg95G4nQL7mQVWI6GwRcfsZAcsKkJvxgxEjzFUgfHoSQ9Qq7KNwqHwuB13MA4a1q/DmBrHgPcmjiGoh//EwC5nGPEmS4RcfkVKOhJf+WOgoxJclFz3kgn//dBA+ya1GhurNn8zb//9NNutNuhz31f////9vt///z+IdAEAAAK4LQIAKobHItEIYCGAExBwe8jcToF9zIKrEdDYIuP2MgOWFSE34wYiR5iqQPj0JIeoVdlG4VD4XA67mAcNa1fhzA1jwHuTRxDUQ//iYBczjHiTJcIuPyKlHQkv/LHQUYkuSi57yQT//uggfZNajQ3Vmz+Zt//+mm3Wm3Q576v////+32///5/EOgAAADVghQAAAAA//uQZAUAB1WI0PZugAAAAAoQwAAAEk3nRd2qAAAAACiDgAAAAAAABCqEEQRLCgwpBGMlJkIz8jKhGvj4k6jzRnqasNKIeoh5gI7BJaC1A1AoNBjJgbyApVS4IDlZgDU5WUAxEKDNmmALHzZp0Fkz1FMTmGFl1FMEyodIavcCAUHDWrKAIA4aa2oCgILEBupZgHvAhEBcZ6joQBxS76AgccrFlczBvKLC0QI2cBoCFvfTDAo7eoOQInqDPBtvrDEZBNYN5xwNwxQRfw8ZQ5wQVLvO8OYU+mHvFLlDh05Mdg7BT6YrRPpCBznMB2r//xKJjyyOh+cImr2/4doscwD6neZjuZR4AgAABYAAAABy1xcdQtxYBYYZdifkUDgzzXaXn98Z0oi9ILU5mBjFANmRwlVJ3/6jYDAmxaiDG3/6xjQQCCKkRb/6kg/wW+kSJ5//rLobkLSiKmqP/0ikJuDaSaSf/6JiLYLEYnW/+kXg1WRVJL/9EmQ1YZIsv/6Qzwy5qk7/+tEU0nkls3/zIUMPKNX/6yZLf+kFgAfgGyLFAUwY//uQZAUABcd5UiNPVXAAAApAAAAAE0VZQKw9ISAAACgAAAAAVQIygIElVrFkBS+Jhi+EAuu+lKAkYUEIsmEAEoMeDmCETMvfSHTGkF5RWH7kz/ESHWPAq/kcCRhqBtMdokPdM7vil7RG98A2sc7zO6ZvTdM7pmOUAZTnJW+NXxqmd41dqJ6mLTXxrPpnV8avaIf5SvL7pndPvPpndJR9Kuu8fePvuiuhorgWjp7Mf/PRjxcFCPDkW31srioCExivv9lcwKEaHsf/7ow2Fl1T/9RkXgEhYElAoCLFtMArxwivDJJ+bR1HTKJdlEoTELCIqgEwVGSQ+hIm0NbK8WXcTEI0UPoa2NbG4y2K00JEWbZavJXkYaqo9CRHS55FcZTjKEk3NKoCYUnSQ0rWxrZbFKbKIhOKPZe1cJKzZSaQrIyULHDZmV5K4xySsDRKWOruanGtjLJXFEmwaIbDLX0hIPBUQPVFVkQkDoUNfSoDgQGKPekoxeGzA4DUvnn4bxzcZrtJyipKfPNy5w+9lnXwgqsiyHNeSVpemw4bWb9psYeq//uQZBoABQt4yMVxYAIAAAkQoAAAHvYpL5m6AAgAACXDAAAAD59jblTirQe9upFsmZbpMudy7Lz1X1DYsxOOSWpfPqNX2WqktK0DMvuGwlbNj44TleLPQ+Gsfb+GOWOKJoIrWb3cIMeeON6lz2umTqMXV8Mj30yWPpjoSa9ujK8SyeJP5y5mOW1D6hvLepeveEAEDo0mgCRClOEgANv3B9a6fikgUSu/DmAMATrGx7nng5p5iimPNZsfQLYB2sDLIkzRKZOHGAaUyDcpFBSLG9MCQALgAIgQs2YunOszLSAyQYPVC2YdGGeHD2dTdJk1pAHGAWDjnkcLKFymS3RQZTInzySoBwMG0QueC3gMsCEYxUqlrcxK6k1LQQcsmyYeQPdC2YfuGPASCBkcVMQQqpVJshui1tkXQJQV0OXGAZMXSOEEBRirXbVRQW7ugq7IM7rPWSZyDlM3IuNEkxzCOJ0ny2ThNkyRai1b6ev//3dzNGzNb//4uAvHT5sURcZCFcuKLhOFs8mLAAEAt4UWAAIABAAAAAB4qbHo0tIjVkUU//uQZAwABfSFz3ZqQAAAAAngwAAAE1HjMp2qAAAAACZDgAAAD5UkTE1UgZEUExqYynN1qZvqIOREEFmBcJQkwdxiFtw0qEOkGYfRDifBui9MQg4QAHAqWtAWHoCxu1Yf4VfWLPIM2mHDFsbQEVGwyqQoQcwnfHeIkNt9YnkiaS1oizycqJrx4KOQjahZxWbcZgztj2c49nKmkId44S71j0c8eV9yDK6uPRzx5X18eDvjvQ6yKo9ZSS6l//8elePK/Lf//IInrOF/FvDoADYAGBMGb7FtErm5MXMlmPAJQVgWta7Zx2go+8xJ0UiCb8LHHdftWyLJE0QIAIsI+UbXu67dZMjmgDGCGl1H+vpF4NSDckSIkk7Vd+sxEhBQMRU8j/12UIRhzSaUdQ+rQU5kGeFxm+hb1oh6pWWmv3uvmReDl0UnvtapVaIzo1jZbf/pD6ElLqSX+rUmOQNpJFa/r+sa4e/pBlAABoAAAAA3CUgShLdGIxsY7AUABPRrgCABdDuQ5GC7DqPQCgbbJUAoRSUj+NIEig0YfyWUho1VBBBA//uQZB4ABZx5zfMakeAAAAmwAAAAF5F3P0w9GtAAACfAAAAAwLhMDmAYWMgVEG1U0FIGCBgXBXAtfMH10000EEEEEECUBYln03TTTdNBDZopopYvrTTdNa325mImNg3TTPV9q3pmY0xoO6bv3r00y+IDGid/9aaaZTGMuj9mpu9Mpio1dXrr5HERTZSmqU36A3CumzN/9Robv/Xx4v9ijkSRSNLQhAWumap82WRSBUqXStV/YcS+XVLnSS+WLDroqArFkMEsAS+eWmrUzrO0oEmE40RlMZ5+ODIkAyKAGUwZ3mVKmcamcJnMW26MRPgUw6j+LkhyHGVGYjSUUKNpuJUQoOIAyDvEyG8S5yfK6dhZc0Tx1KI/gviKL6qvvFs1+bWtaz58uUNnryq6kt5RzOCkPWlVqVX2a/EEBUdU1KrXLf40GoiiFXK///qpoiDXrOgqDR38JB0bw7SoL+ZB9o1RCkQjQ2CBYZKd/+VJxZRRZlqSkKiws0WFxUyCwsKiMy7hUVFhIaCrNQsKkTIsLivwKKigsj8XYlwt/WKi2N4d//uQRCSAAjURNIHpMZBGYiaQPSYyAAABLAAAAAAAACWAAAAApUF/Mg+0aohSIRobBAsMlO//Kk4soosy1JSFRYWaLC4qZBYWFRGZdwqKiwkNBVmoWFSJkWFxX4FFRQWR+LsS4W/rFRb/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////VEFHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAU291bmRib3kuZGUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMjAwNGh0dHA6Ly93d3cuc291bmRib3kuZGUAAAAAAAAAACU=");
+        snd.play();
+    }
+
+    startBeep() {
+        if (this.beepInterval) return; // Evita múltiplos intervalos
+
+        this.beepInterval = setInterval(() => {
+            this.beepCaptcha();
+        }, 1000); // Beep a cada 1 segundo (ajuste conforme necessário)
+    }
+
+    stopBeep() {
+        if (this.beepInterval) {
+            clearInterval(this.beepInterval);
+            this.beepInterval = null; // Remove a referência
+        }
     }
 
     settings = () => {
@@ -885,7 +907,7 @@ class AutoBuild extends ModernUtil {
             <div id="auto_build_title" style="cursor: pointer; filter: ${this.interval ? 'brightness(100%) saturate(186%) hue-rotate(241deg)' : ''}" class="game_header bold" onclick="window.modernBot.autoBuild.toggle()"> Auto Build <span class="command_count"></span>
                 <div style="position: absolute; right: 10px; top: 4px; font-size: 10px;"> (click to toggle) </div>
             </div>
-            <div id="buildings_lvl_buttons"></div>    
+            <div id="buildings_lvl_buttons"></div>
         </div> `;
     };
 
@@ -926,7 +948,7 @@ class AutoBuild extends ModernUtil {
                     left: "40px",
                 });
 
-                // Edit the width of the 
+                // Edit the width of the
                 $window.css({
                     overflowY: 'visible',
                 });
@@ -934,7 +956,7 @@ class AutoBuild extends ModernUtil {
                 clearInterval(interval);
             }, 10);
 
-            // If the element is not found, stop the interval 
+            // If the element is not found, stop the interval
             setTimeout(() => {
                 clearInterval(interval);
             }, 100);
@@ -981,7 +1003,7 @@ class AutoBuild extends ModernUtil {
         uw.$('[id="buildings_lvl_buttons"]').html(`
         <div id="build_settings_${town_id}">
             <div style="width: 600px; margin-bottom: 3px; display: inline-flex">
-            <a class="gp_town_link" href="${town.getLinkFragment()}">${town.getName()}</a> 
+            <a class="gp_town_link" href="${town.getLinkFragment()}">${town.getName()}</a>
             <p style="font-weight: bold; margin: 0px 5px"> [${town.getPoints()} pts] </p>
             <p style="font-weight: bold; margin: 0px 5px"> ${groups} </p>
             </div>
@@ -1276,6 +1298,30 @@ class AutoFarm extends ModernUtil {
         this.timer = 0;
         this.lastTime = Date.now();
         if (this.active) this.active = setInterval(this.main, 1000);
+
+        this.simulateCaptcha = false;
+        this.captchaActive = false;
+
+        /* Check for captcha conditions every 300ms */
+        this.checkCaptchaInterval = setInterval(() => {
+            if (this.simulateCaptcha || $('.botcheck').length || $('#recaptcha_window').length) {
+                if (!this.captchaActive) {
+                    this.console.log('Captcha active, autobuild stopped working');
+                    clearInterval(this.interval);
+                    this.captchaActive = true;
+                }
+            } else {
+                if (this.captchaActive) {
+                    this.console.log('Captcha resolved, autobuild resumed');
+                    this.startInterval(); // Restart autobuild
+                    this.captchaActive = false;
+                }
+            }
+        }, 300);
+    }
+
+    startInterval() {
+        this.interval = setInterval(this.main.bind(this), 300);
     }
 
     /* Create the dropdown menu */
@@ -1574,7 +1620,7 @@ class AutoFarm extends ModernUtil {
             await this.claim();
             this.active = setInterval(this.main, 1000);
 
-            // Set the new timer 
+            // Set the new timer
             const rand = Math.floor(Math.random() * 20_000) + 10_000;
             this.timer = this.timing + rand;
             if (this.timer < next_collection) this.timer = next_collection + rand;
@@ -1708,7 +1754,7 @@ class AutoGratis extends ModernUtil {
                 <div class="right"></div>
                 <div class="caption js-caption">Gratis<div class="effect js-effect"></div></div>
             </div> button (try every 2.5 seconds)
-            </div>    
+            </div>
         </div>
         `;
     };
@@ -1754,13 +1800,13 @@ class AutoGratis extends ModernUtil {
             },
             "town_id": town_id
         };
-    
+
         // Add console log
         this.console.log(`${uw.ITowns.towns[town_id].getName()}: calling gratis for order ${order_id}`);
-    
+
         uw.gpAjax.ajaxPost('frontend_bridge', 'execute', data);
     };
-    
+
 }
 
 class AutoHide extends ModernUtil {
@@ -1824,7 +1870,7 @@ class AutoHide extends ModernUtil {
             </div>
             <div style="padding: 5px; font-weight: 600">
                 Check every 5 seconds, if there is more then 15000 iron store it in the hide
-            </div>    
+            </div>
         </div>
         `;
     };
@@ -2137,7 +2183,7 @@ class AutoRuralLevel extends ModernUtil {
         return `
         <div class="game_border" style="margin-bottom: 20px;">
             ${this.getTitleHtml('auto_rural_level', 'Auto Rural level', this.toggle, '', this.enable)}
-            
+
             <div id="rural_lvl_buttons" style="padding: 5px">
                 ${this.getButtonHtml('rural_lvl_1', 'lvl 1', this.setRuralLevel, 1)}
                 ${this.getButtonHtml('rural_lvl_2', 'lvl 2', this.setRuralLevel, 2)}
@@ -2267,7 +2313,7 @@ class AutoRuralLevel extends ModernUtil {
         this.toggle();
     };
 
-    /* 
+    /*
         Post requests
     */
     unlockRural = (town_id, farm_town_id, relation_id) => {
@@ -2296,18 +2342,18 @@ class AutoRuralLevel extends ModernUtil {
 }
 
 class AutoRuralTrade extends ModernUtil {
-	constructor(c, s) {
-		super(c, s);
+    constructor(c, s) {
+        super(c, s);
 
-		this.ratio = this.storage.load('rt_ratio', 5);
-	}
+        this.ratio = this.storage.load('rt_ratio', 5);
+    }
 
-	settings = () => {
-		requestAnimationFrame(() => {
-			this.setMinRatioLevel(this.ratio);
-		});
+    settings = () => {
+        requestAnimationFrame(() => {
+            this.setMinRatioLevel(this.ratio);
+        });
 
-		return `
+        return `
         <div class="game_border">
             <div class="game_border_top"></div>
             <div class="game_border_bottom"></div>
@@ -2317,7 +2363,7 @@ class AutoRuralTrade extends ModernUtil {
             <div class="game_border_corner corner2"></div>
             <div class="game_border_corner corner3"></div>
             <div class="game_border_corner corner4"></div>
-            <div class="game_header bold" style="position: relative; cursor: pointer" onclick="window.modernBot.autoRuralTrade.main()"> 
+            <div class="game_header bold" style="position: relative; cursor: pointer" onclick="window.modernBot.autoRuralTrade.main()">
             <span style="z-index: 10; position: relative;">Auto Trade resouces </span>
             <div id="res_progress_bar" class="progress_bar_auto"></div>
             <div style="position: absolute; right: 10px; top: 4px; font-size: 10px; z-index: 10"> (click to stop) </div>
@@ -2340,109 +2386,109 @@ class AutoRuralTrade extends ModernUtil {
             </div>
         </div>
         `;
-	};
+    };
 
-	setMinRatioLevel = n => {
-		uw.$('#min_rural_ratio .button_new').addClass('disabled');
-		uw.$(`#min_rural_ratio_${n}`).removeClass('disabled');
-		if (this.ratio != n) {
-			this.ratio = n;
-			this.storage.save('rt_ratio', n);
-		}
-	};
+    setMinRatioLevel = n => {
+        uw.$('#min_rural_ratio .button_new').addClass('disabled');
+        uw.$(`#min_rural_ratio_${n}`).removeClass('disabled');
+        if (this.ratio != n) {
+            this.ratio = n;
+            this.storage.save('rt_ratio', n);
+        }
+    };
 
-	/*  Trade with all rurals*/
-	main = async resouce => {
-		if (resouce) {
-			/* Set button disabled */
-			[1, 2, 3, 4].forEach(i => {
-				uw.$(`#autotrade_lvl_${i}`).addClass('disabled').css('cursor', 'auto');
-			});
-			this.trade_resouce = resouce;
+    /*  Trade with all rurals*/
+    main = async resouce => {
+        if (resouce) {
+            /* Set button disabled */
+            [1, 2, 3, 4].forEach(i => {
+                uw.$(`#autotrade_lvl_${i}`).addClass('disabled').css('cursor', 'auto');
+            });
+            this.trade_resouce = resouce;
 
-			/* Set the current trade to polis at index 0 */
-			this.total_trade = Object.keys(uw.ITowns.towns).length;
-			this.done_trade = 0;
+            /* Set the current trade to polis at index 0 */
+            this.total_trade = Object.keys(uw.ITowns.towns).length;
+            this.done_trade = 0;
 
-			/* Set the interval */
-			this.auto_trade_resouces_loop = setInterval(this.mainTradeLoop, 1500);
-		} else {
-			/* Clear the interval */
-			clearInterval(this.auto_trade_resouces_loop);
+            /* Set the interval */
+            this.auto_trade_resouces_loop = setInterval(this.mainTradeLoop, 1500);
+        } else {
+            /* Clear the interval */
+            clearInterval(this.auto_trade_resouces_loop);
 
-			/* Re-enable buttons and set progress to 0 */
-			uw.$('#res_progress_bar').css('width', 0);
-			[1, 2, 3, 4].forEach(i => {
-				uw.$(`#autotrade_lvl_${i}`).removeClass('disabled').css('cursor', 'pointer');
-			});
-		}
-	};
+            /* Re-enable buttons and set progress to 0 */
+            uw.$('#res_progress_bar').css('width', 0);
+            [1, 2, 3, 4].forEach(i => {
+                uw.$(`#autotrade_lvl_${i}`).removeClass('disabled').css('cursor', 'pointer');
+            });
+        }
+    };
 
-	tradeWithRural = async polis_id => {
-		let town = uw.ITowns.towns[polis_id];
-		if (!town) return;
-		if (town.getAvailableTradeCapacity() < 3000) return;
-		//if (this.check_for_hide && town.getBuildings().attributes.hide < 10) return;
+    tradeWithRural = async polis_id => {
+        let town = uw.ITowns.towns[polis_id];
+        if (!town) return;
+        if (town.getAvailableTradeCapacity() < 3000) return;
+        //if (this.check_for_hide && town.getBuildings().attributes.hide < 10) return;
 
-		let farm_town_models = uw.MM.getOnlyCollectionByName('FarmTown').models;
-		let player_relation_models = uw.MM.getOnlyCollectionByName('FarmTownPlayerRelation').models;
+        let farm_town_models = uw.MM.getOnlyCollectionByName('FarmTown').models;
+        let player_relation_models = uw.MM.getOnlyCollectionByName('FarmTownPlayerRelation').models;
 
-		/* Create list with all the farmtown in current island polis */
-		let x = town.getIslandCoordinateX(),
-			y = town.getIslandCoordinateY();
-		let resources = town.resources();
+        /* Create list with all the farmtown in current island polis */
+        let x = town.getIslandCoordinateX(),
+            y = town.getIslandCoordinateY();
+        let resources = town.resources();
 
-		for (const farmtown of farm_town_models) {
-			if (farmtown.attributes.island_x != x || farmtown.attributes.island_y != y) continue;
-			if (farmtown.attributes.resource_offer != this.trade_resouce) continue;
-			if (resources[farmtown.attributes.resource_demand] < 3000) continue;
+        for (const farmtown of farm_town_models) {
+            if (farmtown.attributes.island_x != x || farmtown.attributes.island_y != y) continue;
+            if (farmtown.attributes.resource_offer != this.trade_resouce) continue;
+            if (resources[farmtown.attributes.resource_demand] < 3000) continue;
 
-			for (const relation of player_relation_models) {
-				if (farmtown.attributes.id != relation.attributes.farm_town_id) continue;
-				if (relation.attributes.current_trade_ratio < this.min_rural_ratio * 0.25) continue;
-				if (town.getAvailableTradeCapacity() < 3000) continue;
-				this.tradeRuralPost(relation.attributes.farm_town_id, relation.attributes.id, town.getAvailableTradeCapacity(), town.id);
-				await this.sleep(750);
-			}
-		}
-	};
+            for (const relation of player_relation_models) {
+                if (farmtown.attributes.id != relation.attributes.farm_town_id) continue;
+                if (relation.attributes.current_trade_ratio < this.min_rural_ratio * 0.25) continue;
+                if (town.getAvailableTradeCapacity() < 3000) continue;
+                this.tradeRuralPost(relation.attributes.farm_town_id, relation.attributes.id, town.getAvailableTradeCapacity(), town.id);
+                await this.sleep(750);
+            }
+        }
+    };
 
-	mainTradeLoop = async () => {
-		/* If last polis, then trigger to stop */
-		if (this.done_trade >= this.total_trade) {
-			this.main();
-			return;
-		}
+    mainTradeLoop = async () => {
+        /* If last polis, then trigger to stop */
+        if (this.done_trade >= this.total_trade) {
+            this.main();
+            return;
+        }
 
-		/* perform trade with current index */
-		let towns = Object.keys(uw.ITowns.towns);
-		await this.tradeWithRural(towns[this.done_trade]);
+        /* perform trade with current index */
+        let towns = Object.keys(uw.ITowns.towns);
+        await this.tradeWithRural(towns[this.done_trade]);
 
-		/* update progress bar */
-		uw.$('#res_progress_bar').css('width', `${(this.done_trade / this.total_trade) * 100}%`);
+        /* update progress bar */
+        uw.$('#res_progress_bar').css('width', `${(this.done_trade / this.total_trade) * 100}%`);
 
-		this.done_trade += 1;
-	};
+        this.done_trade += 1;
+    };
 
-	tradeRuralPost = (farm_town_id, relation_id, count, town_id) => {
-		if (count < 100) return;
-		const data = {
-			model_url: `FarmTownPlayerRelation/${relation_id}`,
-			action_name: 'trade',
-			arguments: { farm_town_id: farm_town_id, amount: count > 3000 ? 3000 : count },
-			town_id: town_id,
-		};
-		uw.gpAjax.ajaxPost('frontend_bridge', 'execute', data);
-	};
+    tradeRuralPost = (farm_town_id, relation_id, count, town_id) => {
+        if (count < 100) return;
+        const data = {
+            model_url: `FarmTownPlayerRelation/${relation_id}`,
+            action_name: 'trade',
+            arguments: { farm_town_id: farm_town_id, amount: count > 3000 ? 3000 : count },
+            town_id: town_id,
+        };
+        uw.gpAjax.ajaxPost('frontend_bridge', 'execute', data);
+    };
 }
 
 class AutoTrade extends ModernUtil {
-	constructor(c, s) {
-		super(c, s);
-	}
+    constructor(c, s) {
+        super(c, s);
+    }
 
-	settings = () => {
-		return `
+    settings = () => {
+        return `
         <div class="game_border" style="margin-bottom: 20px">
             ${this.getTitleHtml('auto_trade', 'Auto Trade', '', '', this.enable_auto_farming)}
             <div class="split_content">
@@ -2452,162 +2498,162 @@ class AutoTrade extends ModernUtil {
                 ${this.getButtonHtml('farming_lvl_3', '20 min', this.setAutoFarmLevel, 3)}
                 ${this.getButtonHtml('farming_lvl_4', '40 min', this.setAutoFarmLevel, 4)}
             </div>
-            </div>    
+            </div>
         </div> `;
-	};
+    };
 }
 
 function autoTradeBot() {
-	const uw = unsafeWindow;
-	const unit_counnt = {
-		bireme: 2.9,
-		slinger: 28,
-	};
+    const uw = unsafeWindow;
+    const unit_counnt = {
+        bireme: 2.9,
+        slinger: 28,
+    };
 
-	this.tradeUntilComplete = async (target = 'active', troop = 'bireme') => {
-		console.log(troop);
-		let ammount;
-		if (target === 'active') target = uw.ITowns.getCurrentTown().id;
-		do {
-			console.log('Trade Loop');
-			ammount = await this.trade(target, troop);
-			await sleep(30000);
-		} while (ammount > 0);
-		console.log('Tradeing Done');
-	};
+    this.tradeUntilComplete = async (target = 'active', troop = 'bireme') => {
+        console.log(troop);
+        let ammount;
+        if (target === 'active') target = uw.ITowns.getCurrentTown().id;
+        do {
+            console.log('Trade Loop');
+            ammount = await this.trade(target, troop);
+            await sleep(30000);
+        } while (ammount > 0);
+        console.log('Tradeing Done');
+    };
 
-	this.trade = async function (target = 'active', troop = 'bireme') {
-		if (target === 'active') target = uw.ITowns.getCurrentTown().id;
-		let ammount = await calculateAmmount(target, troop);
-		let current_ammount;
-		do {
-			current_ammount = ammount;
-			for (let town of Object.values(uw.ITowns.towns)) {
-				if (town.id == target) continue;
-				if (uw.stopBot) break;
-				if (ammount <= 0) break;
-				ammount = await sendBalance(town.id, target, troop, ammount);
-			}
-		} while (current_ammount > ammount);
-		return ammount;
-	};
+    this.trade = async function (target = 'active', troop = 'bireme') {
+        if (target === 'active') target = uw.ITowns.getCurrentTown().id;
+        let ammount = await calculateAmmount(target, troop);
+        let current_ammount;
+        do {
+            current_ammount = ammount;
+            for (let town of Object.values(uw.ITowns.towns)) {
+                if (town.id == target) continue;
+                if (uw.stopBot) break;
+                if (ammount <= 0) break;
+                ammount = await sendBalance(town.id, target, troop, ammount);
+            }
+        } while (current_ammount > ammount);
+        return ammount;
+    };
 
-	/* return all the trades */
-	async function getAllTrades() {
-		return new Promise(function (myResolve, myReject) {
-			uw.gpAjax.ajaxGet('town_overviews', 'trade_overview', {}, !0, e => {
-				myResolve(e.movements);
-			});
-		});
-	}
+    /* return all the trades */
+    async function getAllTrades() {
+        return new Promise(function (myResolve, myReject) {
+            uw.gpAjax.ajaxGet('town_overviews', 'trade_overview', {}, !0, e => {
+                myResolve(e.movements);
+            });
+        });
+    }
 
-	/* Return the ammount of toops duable with the current resouces */
-	function getCount(targtet_id, troop) {
-		let target_polis = uw.ITowns.towns[targtet_id];
-		if (!target_polis) return {};
-		let resources = target_polis.resources();
-		let wood = resources.wood / uw.GameData.units[troop].resources.wood;
-		let stone = resources.stone / uw.GameData.units[troop].resources.stone;
-		let iron = resources.iron / uw.GameData.units[troop].resources.iron;
-		let min = Math.min(wood, stone, iron);
-		return min;
-	}
+    /* Return the ammount of toops duable with the current resouces */
+    function getCount(targtet_id, troop) {
+        let target_polis = uw.ITowns.towns[targtet_id];
+        if (!target_polis) return {};
+        let resources = target_polis.resources();
+        let wood = resources.wood / uw.GameData.units[troop].resources.wood;
+        let stone = resources.stone / uw.GameData.units[troop].resources.stone;
+        let iron = resources.iron / uw.GameData.units[troop].resources.iron;
+        let min = Math.min(wood, stone, iron);
+        return min;
+    }
 
-	/* Return the id of the polis from the name */
-	function getTradeTarget(html) {
-		const element = document.createElement('div');
-		element.innerHTML = html;
-		let name = element.textContent;
-		for (let town of Object.values(uw.ITowns.towns)) {
-			if (town.name == name) return town.id;
-		}
-	}
+    /* Return the id of the polis from the name */
+    function getTradeTarget(html) {
+        const element = document.createElement('div');
+        element.innerHTML = html;
+        let name = element.textContent;
+        for (let town of Object.values(uw.ITowns.towns)) {
+            if (town.name == name) return town.id;
+        }
+    }
 
-	/* Return ammount of troops duable for resouces in a trade */
-	function getCountFromTrade(trade, troop) {
-		let wood = trade.res.wood / uw.GameData.units[troop].resources.wood;
-		let stone = trade.res.stone / uw.GameData.units[troop].resources.stone;
-		let iron = trade.res.iron / uw.GameData.units[troop].resources.iron;
-		let min = Math.min(wood, stone, iron);
-		return min;
-	}
+    /* Return ammount of troops duable for resouces in a trade */
+    function getCountFromTrade(trade, troop) {
+        let wood = trade.res.wood / uw.GameData.units[troop].resources.wood;
+        let stone = trade.res.stone / uw.GameData.units[troop].resources.stone;
+        let iron = trade.res.iron / uw.GameData.units[troop].resources.iron;
+        let min = Math.min(wood, stone, iron);
+        return min;
+    }
 
-	/* Return ammount of resouces to be send */
-	async function calculateAmmount(targtet_id, troop) {
-		let target_polis = uw.ITowns.towns[targtet_id];
-		if (!target_polis) return {};
-		let current_count = {};
+    /* Return ammount of resouces to be send */
+    async function calculateAmmount(targtet_id, troop) {
+        let target_polis = uw.ITowns.towns[targtet_id];
+        if (!target_polis) return {};
+        let current_count = {};
 
-		let discount = uw.GeneralModifications.getUnitBuildResourcesModification(targtet_id, uw.GameData.units[troop]);
-		let todo = parseInt(target_polis.getAvailablePopulation() / uw.GameData.units[troop].population) * discount;
-		let in_polis = getCount(targtet_id, troop);
+        let discount = uw.GeneralModifications.getUnitBuildResourcesModification(targtet_id, uw.GameData.units[troop]);
+        let todo = parseInt(target_polis.getAvailablePopulation() / uw.GameData.units[troop].population) * discount;
+        let in_polis = getCount(targtet_id, troop);
 
-		/* If the polis has all the resouces -> no resouces has to be sent */
-		todo -= in_polis;
-		if (todo < 0) return 0;
+        /* If the polis has all the resouces -> no resouces has to be sent */
+        todo -= in_polis;
+        if (todo < 0) return 0;
 
-		let trade = uw.MM.getCollections().Trade[0].models;
-		let trades = await getAllTrades();
-		for (let trade of trades) {
-			if (getTradeTarget(trade.to.link) != targtet_id) continue;
-			todo -= getCountFromTrade(trade, troop);
-		}
-		return todo;
-	}
+        let trade = uw.MM.getCollections().Trade[0].models;
+        let trades = await getAllTrades();
+        for (let trade of trades) {
+            if (getTradeTarget(trade.to.link) != targtet_id) continue;
+            todo -= getCountFromTrade(trade, troop);
+        }
+        return todo;
+    }
 
-	function getCountWithTrade(targtet_id, troop) {
-		let target_polis = uw.ITowns.towns[targtet_id];
-		if (!target_polis) return {};
-		let resources = target_polis.resources();
-		let wood = resources.wood / uw.GameData.units[troop].resources.wood;
-		let stone = resources.stone / uw.GameData.units[troop].resources.stone;
-		let iron = resources.iron / uw.GameData.units[troop].resources.iron;
-		let min_resouces = Math.min(wood, stone, iron); // min ammount
-		let trade = target_polis.getAvailableTradeCapacity();
-		let max_trade = trade / (uw.GameData.units[troop].resources.wood + uw.GameData.units[troop].resources.stone + uw.GameData.units[troop].resources.iron); // max tradable
+    function getCountWithTrade(targtet_id, troop) {
+        let target_polis = uw.ITowns.towns[targtet_id];
+        if (!target_polis) return {};
+        let resources = target_polis.resources();
+        let wood = resources.wood / uw.GameData.units[troop].resources.wood;
+        let stone = resources.stone / uw.GameData.units[troop].resources.stone;
+        let iron = resources.iron / uw.GameData.units[troop].resources.iron;
+        let min_resouces = Math.min(wood, stone, iron); // min ammount
+        let trade = target_polis.getAvailableTradeCapacity();
+        let max_trade = trade / (uw.GameData.units[troop].resources.wood + uw.GameData.units[troop].resources.stone + uw.GameData.units[troop].resources.iron); // max tradable
 
-		if (max_trade < min_resouces) return max_trade;
-		else return min_resouces;
-	}
+        if (max_trade < min_resouces) return max_trade;
+        else return min_resouces;
+    }
 
-	/* Set await and add promise */
-	function sendTradeRequest(from_id, target_id, troop, count) {
-		let data = {
-			id: target_id,
-			wood: uw.GameData.units[troop].resources.wood * count,
-			stone: uw.GameData.units[troop].resources.stone * count,
-			iron: uw.GameData.units[troop].resources.iron * count,
-			town_id: from_id,
-			nl_init: true,
-		};
+    /* Set await and add promise */
+    function sendTradeRequest(from_id, target_id, troop, count) {
+        let data = {
+            id: target_id,
+            wood: uw.GameData.units[troop].resources.wood * count,
+            stone: uw.GameData.units[troop].resources.stone * count,
+            iron: uw.GameData.units[troop].resources.iron * count,
+            town_id: from_id,
+            nl_init: true,
+        };
 
-		return new Promise(function (myResolve, myReject) {
-			uw.gpAjax.ajaxPost('town_info', 'trade', data, !0, () => {
-				setTimeout(() => myResolve(), 500);
-			});
-		});
-	}
+        return new Promise(function (myResolve, myReject) {
+            uw.gpAjax.ajaxPost('town_info', 'trade', data, !0, () => {
+                setTimeout(() => myResolve(), 500);
+            });
+        });
+    }
 
-	/* Send resouces from polis to target, balanced for that troop, return updated count*/
-	async function sendBalance(polis_id, target_id, troop, count) {
-		let troops_ammount = unit_counnt[troop];
-		if (!troops_ammount) return 0;
-		if (polis_id == target_id) return count;
-		let sender_polis = uw.ITowns.towns[polis_id];
-		let duable = getCount(polis_id, troop);
-		if (duable < troops_ammount) return count;
-		if (sender_polis.getAvailableTradeCapacity() < 500) return count;
-		let duable_with_trade = getCountWithTrade(polis_id, troop);
-		if (duable_with_trade < troops_ammount) return count;
-		await sendTradeRequest(polis_id, target_id, troop, troops_ammount);
-		return count - troops_ammount < 0 ? 0 : count - troops_ammount;
-	}
+    /* Send resouces from polis to target, balanced for that troop, return updated count*/
+    async function sendBalance(polis_id, target_id, troop, count) {
+        let troops_ammount = unit_counnt[troop];
+        if (!troops_ammount) return 0;
+        if (polis_id == target_id) return count;
+        let sender_polis = uw.ITowns.towns[polis_id];
+        let duable = getCount(polis_id, troop);
+        if (duable < troops_ammount) return count;
+        if (sender_polis.getAvailableTradeCapacity() < 500) return count;
+        let duable_with_trade = getCountWithTrade(polis_id, troop);
+        if (duable_with_trade < troops_ammount) return count;
+        await sendTradeRequest(polis_id, target_id, troop, troops_ammount);
+        return count - troops_ammount < 0 ? 0 : count - troops_ammount;
+    }
 
-	function sleep(time) {
-		return new Promise(function (myResolve, myReject) {
-			setTimeout(() => myResolve(), time);
-		});
-	}
+    function sleep(time) {
+        return new Promise(function (myResolve, myReject) {
+            setTimeout(() => myResolve(), time);
+        });
+    }
 }
 
 class AutoTrain extends ModernUtil {
@@ -2697,7 +2743,7 @@ class AutoTrain extends ModernUtil {
             <div class="game_border_corner corner2"></div>
             <div class="game_border_corner corner3"></div>
             <div class="game_border_corner corner4"></div>
-            <div class="game_header bold" style="position: relative; cursor: pointer"> 
+            <div class="game_header bold" style="position: relative; cursor: pointer">
             <span style="z-index: 10; position: relative;"> Settings </span>
             <span class="command_count"></span></div>
 
@@ -2724,11 +2770,11 @@ class AutoTrain extends ModernUtil {
             <div class="game_border_corner corner2"></div>
             <div class="game_border_corner corner3"></div>
             <div class="game_border_corner corner4"></div>
-            <div id="auto_train_title" class="game_header bold" style="position: relative; cursor: pointer" onclick="window.modernBot.autoTrain.trigger()"> 
+            <div id="auto_train_title" class="game_header bold" style="position: relative; cursor: pointer" onclick="window.modernBot.autoTrain.trigger()">
             <span style="z-index: 10; position: relative;">Auto Train </span>
             <div style="position: absolute; right: 10px; top: 4px; font-size: 10px; z-index: 10"> (click to reset) </div>
             <span class="command_count"></span></div>
-            <div id="troops_lvl_buttons"></div>    
+            <div id="troops_lvl_buttons"></div>
         </div>
     `;
     };
@@ -2819,7 +2865,7 @@ class AutoTrain extends ModernUtil {
         uw.$('#troops_lvl_buttons').html(`
         <div id="troops_settings_${town_id}">
             <div style="width: 600px; margin-bottom: 3px; display: inline-flex">
-            <a class="gp_town_link" href="${town.getLinkFragment()}">${town.getName()}</a> 
+            <a class="gp_town_link" href="${town.getLinkFragment()}">${town.getName()}</a>
             <p style="font-weight: bold; margin: 0px 5px"> [${town.getPoints()} pts] </p>
             <p style="font-weight: bold; margin: 0px 5px"> </p>
             <div class="population_icon_bot">
@@ -3013,10 +3059,10 @@ class AutoTrain extends ModernUtil {
             amount: count,
             town_id: town_id,
         };
-    
+
         // Add console log
         this.console.log(`${uw.ITowns.towns[town_id].getName()}: training ${count} ${unit}`);
-    
+
         uw.gpAjax.ajaxPost('building_barracks', 'build', data);
     };
 
@@ -3041,237 +3087,237 @@ class AutoTrain extends ModernUtil {
     };
 }
 
-/* 
+/*
     botConsole.log(message);
     ideas:
-        - add colors  
+        - add colors
 */
 
 class BotConsole {
-	constructor() {
-		this.string = [];
-		this.updateSettings();
-	}
+    constructor() {
+        this.string = [];
+        this.updateSettings();
+    }
 
-	renderSettings = () => {
-		setTimeout(() => {
-			this.updateSettings();
-			let interval = setInterval(() => {
-				this.updateSettings();
-				if (!uw.$('#modern_console').length) clearInterval(interval);
-			}, 1000);
-		}, 100);
-		return `<div class="console_modernbot" id="modern_console"><div>`;
-	};
+    renderSettings = () => {
+        setTimeout(() => {
+            this.updateSettings();
+            let interval = setInterval(() => {
+                this.updateSettings();
+                if (!uw.$('#modern_console').length) clearInterval(interval);
+            }, 1000);
+        }, 100);
+        return `<div class="console_modernbot" id="modern_console"><div>`;
+    };
 
-	log = (string) => {
-		const date = new Date();
-		const time = date.toLocaleTimeString();
-		this.string.push(`[${time}] ${string}`);
-	};
+    log = (string) => {
+        const date = new Date();
+        const time = date.toLocaleTimeString();
+        this.string.push(`[${time}] ${string}`);
+    };
 
-	updateSettings = () => {
-		let console = uw.$('#modern_console');
-		this.string.forEach((e, i) => {
-			if (uw.$(`#log_id_${i}`).length) return;
-			console.prepend(`<p id="log_id_${i}">${e}</p>`);
-		});
-	};
+    updateSettings = () => {
+        let console = uw.$('#modern_console');
+        this.string.forEach((e, i) => {
+            if (uw.$(`#log_id_${i}`).length) return;
+            console.prepend(`<p id="log_id_${i}">${e}</p>`);
+        });
+    };
 }
 
 class Compressor {
-	NUMBERS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-	SYMBOLS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!#$%&()*+-./:;<=>?@[]^_`{|}~';
+    NUMBERS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    SYMBOLS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!#$%&()*+-./:;<=>?@[]^_`{|}~';
 
-	ITEMS = {
-		// Buildings
-		academy: 'a',
-		barracks: 'b',
-		docks: 'd',
-		farm: 'f',
-		hide: 'h',
-		ironer: 'i',
-		lumber: 'l',
-		main: 'm',
-		market: 'k',
-		stoner: 'c',
-		storage: 's',
-		temple: 't',
-		wall: 'w',
+    ITEMS = {
+        // Buildings
+        academy: 'a',
+        barracks: 'b',
+        docks: 'd',
+        farm: 'f',
+        hide: 'h',
+        ironer: 'i',
+        lumber: 'l',
+        main: 'm',
+        market: 'k',
+        stoner: 'c',
+        storage: 's',
+        temple: 't',
+        wall: 'w',
 
-		// Troops
-		sword: 'A',
-		archer: 'B',
-		hoplite: 'C',
-		slinger: 'D',
-		rider: 'E',
-		chariot: 'F',
-		catapult: 'G',
-		big_transporter: 'H',
-		small_transporter: 'I',
-		bireme: 'L',
-		demolition_ship: 'M',
-		attack_ship: 'N',
-		trireme: 'O',
-		colonize_ship: 'P',
-	};
+        // Troops
+        sword: 'A',
+        archer: 'B',
+        hoplite: 'C',
+        slinger: 'D',
+        rider: 'E',
+        chariot: 'F',
+        catapult: 'G',
+        big_transporter: 'H',
+        small_transporter: 'I',
+        bireme: 'L',
+        demolition_ship: 'M',
+        attack_ship: 'N',
+        trireme: 'O',
+        colonize_ship: 'P',
+    };
 
-	constructor() {
-		const swap = json => {
-			var ret = {};
-			for (var key in json) {
-				ret[json[key]] = key;
-			}
-			return ret;
-		};
+    constructor() {
+        const swap = json => {
+            var ret = {};
+            for (var key in json) {
+                ret[json[key]] = key;
+            }
+            return ret;
+        };
 
-		this.ITEMS_REV = swap(this.ITEMS);
-	}
+        this.ITEMS_REV = swap(this.ITEMS);
+    }
 
-	/* Pass a storage object, return it encoded */
-	encode(storage) {
-		for (let item in storage) {
-			if (typeof storage[item] !== 'object') continue;
+    /* Pass a storage object, return it encoded */
+    encode(storage) {
+        for (let item in storage) {
+            if (typeof storage[item] !== 'object') continue;
 
-			if (item == 'buildings') {
-				for (let polis_id in storage[item]) {
-					let obj = storage[item][polis_id];
-					storage[item][polis_id] = this.encode_building(obj);
-				}
-			}
+            if (item == 'buildings') {
+                for (let polis_id in storage[item]) {
+                    let obj = storage[item][polis_id];
+                    storage[item][polis_id] = this.encode_building(obj);
+                }
+            }
 
-			if (item == 'troops') {
-				for (let polis_id in storage[item]) {
-					let obj = storage[item][polis_id];
-					storage[item][polis_id] = this.encode_troops(obj);
-				}
-			}
-		}
+            if (item == 'troops') {
+                for (let polis_id in storage[item]) {
+                    let obj = storage[item][polis_id];
+                    storage[item][polis_id] = this.encode_troops(obj);
+                }
+            }
+        }
 
-		return storage;
-	}
+        return storage;
+    }
 
-	decode(storage) {
-		for (let item in storage) {
-			if (typeof storage[item] !== 'object') continue;
+    decode(storage) {
+        for (let item in storage) {
+            if (typeof storage[item] !== 'object') continue;
 
-			if (item == 'buildings') {
-				for (let polis_id in storage[item]) {
-					let str = storage[item][polis_id];
-					storage[item][polis_id] = this.decode_bulding(str);
-				}
-			}
+            if (item == 'buildings') {
+                for (let polis_id in storage[item]) {
+                    let str = storage[item][polis_id];
+                    storage[item][polis_id] = this.decode_bulding(str);
+                }
+            }
 
-			if (item === 'troops') {
-				for (let polis_id in storage[item]) {
-					let str = storage[item][polis_id];
-					storage[item][polis_id] = this.decode_troops(str);
-				}
-			}
-		}
+            if (item === 'troops') {
+                for (let polis_id in storage[item]) {
+                    let str = storage[item][polis_id];
+                    storage[item][polis_id] = this.decode_troops(str);
+                }
+            }
+        }
 
-		return storage;
-	}
+        return storage;
+    }
 
-	compressNumber(num) {
-		let base = this.SYMBOLS.length;
-		let digits = [];
-		while (num > 0) {
-			digits.unshift(this.SYMBOLS[num % base]);
-			num = Math.floor(num / base);
-		}
-		if (digits.length == 1) {
-			digits.unshift('0');
-		}
-		return digits.slice(-2).join('');
-	}
+    compressNumber(num) {
+        let base = this.SYMBOLS.length;
+        let digits = [];
+        while (num > 0) {
+            digits.unshift(this.SYMBOLS[num % base]);
+            num = Math.floor(num / base);
+        }
+        if (digits.length == 1) {
+            digits.unshift('0');
+        }
+        return digits.slice(-2).join('');
+    }
 
-	decompressNumber(str) {
-		let base = this.SYMBOLS.length;
-		let digits = str.split('');
-		let num = 0;
-		for (let i = 0; i < digits.length; i++) {
-			num += this.SYMBOLS.indexOf(digits[i]) * Math.pow(base, digits.length - i - 1);
-		}
-		return num;
-	}
+    decompressNumber(str) {
+        let base = this.SYMBOLS.length;
+        let digits = str.split('');
+        let num = 0;
+        for (let i = 0; i < digits.length; i++) {
+            num += this.SYMBOLS.indexOf(digits[i]) * Math.pow(base, digits.length - i - 1);
+        }
+        return num;
+    }
 
-	/* Give the object of building, return the encoded string */
-	encode_building(obj) {
-		let str = '';
-		for (let item in obj) {
-			str += this.ITEMS[item] + this.NUMBERS[obj[item]];
-		}
-		return str;
-	}
+    /* Give the object of building, return the encoded string */
+    encode_building(obj) {
+        let str = '';
+        for (let item in obj) {
+            str += this.ITEMS[item] + this.NUMBERS[obj[item]];
+        }
+        return str;
+    }
 
-	/* Give an encoded string with building, return the correspong object */
-	decode_bulding(str) {
-		let json_str = '{';
-		for (let item of str.match(/.{1,2}/g)) {
-			json_str += `"${this.ITEMS_REV[item[0]]}"` + ':' + this.NUMBERS.indexOf(item[1]) + ',';
-		}
-		json_str = json_str.replace(/,$/, '}');
-		return JSON.parse(json_str);
-	}
+    /* Give an encoded string with building, return the correspong object */
+    decode_bulding(str) {
+        let json_str = '{';
+        for (let item of str.match(/.{1,2}/g)) {
+            json_str += `"${this.ITEMS_REV[item[0]]}"` + ':' + this.NUMBERS.indexOf(item[1]) + ',';
+        }
+        json_str = json_str.replace(/,$/, '}');
+        return JSON.parse(json_str);
+    }
 
-	encode_troops(obj) {
-		let str = '';
-		for (let item in obj) {
-			str += this.ITEMS[item] + this.compressNumber(obj[item]);
-		}
-		return str;
-	}
+    encode_troops(obj) {
+        let str = '';
+        for (let item in obj) {
+            str += this.ITEMS[item] + this.compressNumber(obj[item]);
+        }
+        return str;
+    }
 
-	decode_troops(str) {
-		let json_str = '{';
-		for (let item of str.match(/.{1,3}/g)) {
-			json_str += `"${this.ITEMS_REV[item[0]]}"` + ':' + this.decompressNumber(item.slice(-2)) + ',';
-		}
-		json_str = json_str.replace(/,$/, '}');
-		return JSON.parse(json_str);
-	}
+    decode_troops(str) {
+        let json_str = '{';
+        for (let item of str.match(/.{1,3}/g)) {
+            json_str += `"${this.ITEMS_REV[item[0]]}"` + ':' + this.decompressNumber(item.slice(-2)) + ',';
+        }
+        json_str = json_str.replace(/,$/, '}');
+        return JSON.parse(json_str);
+    }
 }
 
-/* 
+/*
     Create a new window
  */
 class createGrepoWindow {
-	constructor({ id, title, size, tabs, start_tab, minimizable = true }) {
-		this.minimizable = minimizable;
-		this.width = size[0];
-		this.height = size[1];
-		this.title = title;
-		this.id = id;
-		this.tabs = tabs;
-		this.start_tab = start_tab;
+    constructor({ id, title, size, tabs, start_tab, minimizable = true }) {
+        this.minimizable = minimizable;
+        this.width = size[0];
+        this.height = size[1];
+        this.title = title;
+        this.id = id;
+        this.tabs = tabs;
+        this.start_tab = start_tab;
 
-		/* Private methods */
-		const createWindowType = (name, title, width, height, minimizable) => {
-			function WndHandler(wndhandle) {
-				this.wnd = wndhandle;
-			}
-			Function.prototype.inherits.call(WndHandler, uw.WndHandlerDefault);
-			WndHandler.prototype.getDefaultWindowOptions = function () {
-				return {
-					position: ['center', 'center', 100, 100],
-					width: width,
-					height: height,
-					minimizable: minimizable,
-					title: title,
-				};
-			};
-			uw.GPWindowMgr.addWndType(name, `${name}_75624`, WndHandler, 1);
-		};
+        /* Private methods */
+        const createWindowType = (name, title, width, height, minimizable) => {
+            function WndHandler(wndhandle) {
+                this.wnd = wndhandle;
+            }
+            Function.prototype.inherits.call(WndHandler, uw.WndHandlerDefault);
+            WndHandler.prototype.getDefaultWindowOptions = function () {
+                return {
+                    position: ['center', 'center', 100, 100],
+                    width: width,
+                    height: height,
+                    minimizable: minimizable,
+                    title: title,
+                };
+            };
+            uw.GPWindowMgr.addWndType(name, `${name}_75624`, WndHandler, 1);
+        };
 
-		const getTabById = (id) => {
-			return this.tabs.filter((tab) => tab.id === id)[0];
-		};
+        const getTabById = (id) => {
+            return this.tabs.filter((tab) => tab.id === id)[0];
+        };
 
-		this.activate = function () {
-			createWindowType(this.id, this.title, this.width, this.height, this.minimizable); //
-			uw.$(
-				`<style id="${this.id}_custom_window_style">
+        this.activate = function () {
+            createWindowType(this.id, this.title, this.width, this.height, this.minimizable); //
+            uw.$(
+                `<style id="${this.id}_custom_window_style">
                  #${this.id} .tab_icon { left: 23px;}
                  #${this.id} {top: -36px; right: 95px;}
                  #${this.id} .submenu_link {color: #000;}
@@ -3279,67 +3325,67 @@ class createGrepoWindow {
                  #${this.id} li { float:left; min-width: 60px; }
                  </style>
                 `,
-			).appendTo('head');
-		};
+            ).appendTo('head');
+        };
 
-		this.deactivate = function () {
-			if (uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr[`TYPE_${this.id}`])) {
-				uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr[`TYPE_${this.id}`]).close();
-			}
-			uw.$(`#${this.id}_custom_window_style`).remove();
-		};
+        this.deactivate = function () {
+            if (uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr[`TYPE_${this.id}`])) {
+                uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr[`TYPE_${this.id}`]).close();
+            }
+            uw.$(`#${this.id}_custom_window_style`).remove();
+        };
 
-		/* open the window */
-		this.openWindow = function () {
-			let wn = uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr[`TYPE_${this.id}`]);
+        /* open the window */
+        this.openWindow = function () {
+            let wn = uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr[`TYPE_${this.id}`]);
 
-			/* if open is called but window it's alreay open minimized, maximize that */
-			if (wn) {
-				if (wn.isMinimized()) {
-					wn.maximizeWindow();
-				}
-				return;
-			}
+            /* if open is called but window it's alreay open minimized, maximize that */
+            if (wn) {
+                if (wn.isMinimized()) {
+                    wn.maximizeWindow();
+                }
+                return;
+            }
 
-			let content = `<ul id="${this.id}" class="menu_inner"></ul><div id="${this.id}_content"> </div>`;
-			uw.Layout.wnd.Create(uw.GPWindowMgr[`TYPE_${this.id}`]).setContent(content);
-			/* Add and reder tabs */
-			this.tabs.forEach((e) => {
-				let html = `
+            let content = `<ul id="${this.id}" class="menu_inner"></ul><div id="${this.id}_content"> </div>`;
+            uw.Layout.wnd.Create(uw.GPWindowMgr[`TYPE_${this.id}`]).setContent(content);
+            /* Add and reder tabs */
+            this.tabs.forEach((e) => {
+                let html = `
                     <li><a id="${e.id}" class="submenu_link" href="#"><span class="left"><span class="right"><span class="middle">
                     <span class="tab_label"> ${e.title} </span>
                     </span></span></span></a></li>
                 `;
-				uw.$(html).appendTo(`#${this.id}`);
-			});
+                uw.$(html).appendTo(`#${this.id}`);
+            });
 
-			/* Add events to tabs */
-			let tabs = '';
-			this.tabs.forEach((e) => {
-				tabs += `#${this.id} #${e.id}, `;
-			});
-			tabs = tabs.slice(0, -2);
-			let self = this;
-			uw.$(tabs).click(function () {
-				self.renderTab(this.id);
-			});
-			/* render default tab*/
-			this.renderTab(this.tabs[this.start_tab].id);
-		};
+            /* Add events to tabs */
+            let tabs = '';
+            this.tabs.forEach((e) => {
+                tabs += `#${this.id} #${e.id}, `;
+            });
+            tabs = tabs.slice(0, -2);
+            let self = this;
+            uw.$(tabs).click(function () {
+                self.renderTab(this.id);
+            });
+            /* render default tab*/
+            this.renderTab(this.tabs[this.start_tab].id);
+        };
 
-		this.closeWindow = function () {
-			uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr[`TYPE_${this.id}`]).close();
-		};
+        this.closeWindow = function () {
+            uw.Layout.wnd.getOpenFirst(uw.GPWindowMgr[`TYPE_${this.id}`]).close();
+        };
 
-		/* Handle active tab */
-		this.renderTab = function (id) {
-			let tab = getTabById(id);
-			uw.$(`#${this.id}_content`).html(getTabById(id).render());
-			uw.$(`#${this.id} .active`).removeClass('active');
-			uw.$(`#${id}`).addClass('active');
-			getTabById(id).afterRender ? getTabById(id).afterRender() : '';
-		};
-	}
+        /* Handle active tab */
+        this.renderTab = function (id) {
+            let tab = getTabById(id);
+            uw.$(`#${this.id}_content`).html(getTabById(id).render());
+            uw.$(`#${this.id} .active`).removeClass('active');
+            uw.$(`#${id}`).addClass('active');
+            getTabById(id).afterRender ? getTabById(id).afterRender() : '';
+        };
+    }
 }
 
 // TODO:
@@ -3347,164 +3393,164 @@ class createGrepoWindow {
 // - add logs in console
 
 class ModernStorage extends Compressor {
-	constructor() {
-		super();
-		this.check_done = 0;
+    constructor() {
+        super();
+        this.check_done = 0;
 
-		/* Add event to add the button in the notes */
-		uw.$.Observer(uw.GameEvents.window.open).subscribe((e, i) => {
-			if (!i.attributes) return;
-			if (i.attributes.window_type != 'notes') return;
-			setTimeout(this.addButton, 100);
-		});
-		uw.$.Observer(uw.GameEvents.window.tab.rendered).subscribe((e, i) => {
-			const { attributes } = i.window_model;
-			if (!attributes) return;
-			if (attributes.window_type !== 'notes') return;
-			requestAnimationFrame(this.addButton);
-		});
-	}
+        /* Add event to add the button in the notes */
+        uw.$.Observer(uw.GameEvents.window.open).subscribe((e, i) => {
+            if (!i.attributes) return;
+            if (i.attributes.window_type != 'notes') return;
+            setTimeout(this.addButton, 100);
+        });
+        uw.$.Observer(uw.GameEvents.window.tab.rendered).subscribe((e, i) => {
+            const { attributes } = i.window_model;
+            if (!attributes) return;
+            if (attributes.window_type !== 'notes') return;
+            requestAnimationFrame(this.addButton);
+        });
+    }
 
-	getStorage = () => {
-		const worldId = uw.Game.world_id;
-		const savedValue = localStorage.getItem(`${worldId}_modernBot`);
-		let storage = {};
+    getStorage = () => {
+        const worldId = uw.Game.world_id;
+        const savedValue = localStorage.getItem(`${worldId}_modernBot`);
+        let storage = {};
 
-		if (savedValue !== null && savedValue !== undefined) {
-			try {
-				storage = JSON.parse(savedValue);
-			} catch (error) {
-				console.error(`Error parsing localStorage data: ${error}`);
-			}
-		}
+        if (savedValue !== null && savedValue !== undefined) {
+            try {
+                storage = JSON.parse(savedValue);
+            } catch (error) {
+                console.error(`Error parsing localStorage data: ${error}`);
+            }
+        }
 
-		return storage;
-	};
+        return storage;
+    };
 
-	saveStorage = storage => {
-		try {
-			const worldId = uw.Game.world_id;
-			localStorage.setItem(`${worldId}_modernBot`, JSON.stringify(storage));
-			this.lastUpdateTime = Date.now();
-			return true;
-		} catch (error) {
-			console.error(`Error saving data to localStorage: ${error}`);
-			return false;
-		}
-	};
+    saveStorage = storage => {
+        try {
+            const worldId = uw.Game.world_id;
+            localStorage.setItem(`${worldId}_modernBot`, JSON.stringify(storage));
+            this.lastUpdateTime = Date.now();
+            return true;
+        } catch (error) {
+            console.error(`Error saving data to localStorage: ${error}`);
+            return false;
+        }
+    };
 
-	save = (key, content) => {
-		const storage = this.getStorage();
-		storage[key] = content;
-		return this.saveStorage(storage);
-	};
+    save = (key, content) => {
+        const storage = this.getStorage();
+        storage[key] = content;
+        return this.saveStorage(storage);
+    };
 
-	load = (key, defaultValue = null) => {
-		const storage = this.getStorage();
-		const savedValue = storage[key];
-		return savedValue !== undefined ? savedValue : defaultValue;
-	};
+    load = (key, defaultValue = null) => {
+        const storage = this.getStorage();
+        const savedValue = storage[key];
+        return savedValue !== undefined ? savedValue : defaultValue;
+    };
 
-	/* Call to save the setting to the given note id */
-	saveSettingsNote = note_id => {
-		const storage = JSON.stringify(this.encode(this.getStorage()));
-		const data = {
-			model_url: `PlayerNote/${note_id}`,
-			action_name: 'save',
-			arguments: {
-				id: note_id,
-				text: storage,
-			},
-		};
-		uw.gpAjax.ajaxPost('frontend_bridge', 'execute', data);
-		return storage;
-	};
+    /* Call to save the setting to the given note id */
+    saveSettingsNote = note_id => {
+        const storage = JSON.stringify(this.encode(this.getStorage()));
+        const data = {
+            model_url: `PlayerNote/${note_id}`,
+            action_name: 'save',
+            arguments: {
+                id: note_id,
+                text: storage,
+            },
+        };
+        uw.gpAjax.ajaxPost('frontend_bridge', 'execute', data);
+        return storage;
+    };
 
-	/* Call to add the buttons */
-	addButton = () => {
-		this.check_done += 1;
-		if ($('#modern_storage_load').length) return;
+    /* Call to add the buttons */
+    addButton = () => {
+        this.check_done += 1;
+        if ($('#modern_storage_load').length) return;
 
-		const modern_settings_load = $('<div/>', {
-			class: 'button_new',
-			id: 'modern_storage_load',
-			style: 'position: absolute; bottom: 5px; left: 6px; ',
-			onclick: 'modernBot.storage.loadSettings()',
-			html: '<div class="left"></div><div class="right"></div><div class="caption js-caption"> Load <div class="effect js-effect"></div></div>',
-		});
+        const modern_settings_load = $('<div/>', {
+            class: 'button_new',
+            id: 'modern_storage_load',
+            style: 'position: absolute; bottom: 5px; left: 6px; ',
+            onclick: 'modernBot.storage.loadSettings()',
+            html: '<div class="left"></div><div class="right"></div><div class="caption js-caption"> Load <div class="effect js-effect"></div></div>',
+        });
 
-		const modern_settings_save = $('<div/>', {
-			class: 'button_new',
-			id: 'modern_storage_save',
-			style: 'position: absolute; bottom: 5px; left: 75px; ',
-			onclick: 'modernBot.storage.saveSettings()',
-			html: '<div class="left"></div><div class="right"></div><div class="caption js-caption"> Save <div class="effect js-effect"></div></div>',
-		});
+        const modern_settings_save = $('<div/>', {
+            class: 'button_new',
+            id: 'modern_storage_save',
+            style: 'position: absolute; bottom: 5px; left: 75px; ',
+            onclick: 'modernBot.storage.saveSettings()',
+            html: '<div class="left"></div><div class="right"></div><div class="caption js-caption"> Save <div class="effect js-effect"></div></div>',
+        });
 
-		const box = $('.notes_container');
-		if (box.length) {
-			$('.notes_container').append(modern_settings_load, modern_settings_save);
-		} else {
-			if (this.check_done > 10) {
-				this.check_done = 0;
-				return;
-			}
-			setTimeout(this.addButton, 100);
-		}
-	};
+        const box = $('.notes_container');
+        if (box.length) {
+            $('.notes_container').append(modern_settings_load, modern_settings_save);
+        } else {
+            if (this.check_done > 10) {
+                this.check_done = 0;
+                return;
+            }
+            setTimeout(this.addButton, 100);
+        }
+    };
 
-	saveSettings = () => {
-		uw.ConfirmationWindowFactory.openSimpleConfirmation(
-			'ModernStorage',
-			'This operation will overwrite the current note with the local settings of the ModernBot',
-			() => {
-				// trigged when user press yes
-				const note = this.getActiveNote();
-				if (!note) return; // TODO: display an error
-				const content = this.saveSettingsNote(note.id);
-				$('.preview_box').text(content);
-			},
-			() => {}
-		);
-	};
+    saveSettings = () => {
+        uw.ConfirmationWindowFactory.openSimpleConfirmation(
+            'ModernStorage',
+            'This operation will overwrite the current note with the local settings of the ModernBot',
+            () => {
+                // trigged when user press yes
+                const note = this.getActiveNote();
+                if (!note) return; // TODO: display an error
+                const content = this.saveSettingsNote(note.id);
+                $('.preview_box').text(content);
+            },
+            () => { }
+        );
+    };
 
-	loadSettings = () => {
-		// TODO: check that the current note has settimhs
-		uw.ConfirmationWindowFactory.openSimpleConfirmation(
-			'ModernStorage',
-			'This operation will load the settings of the current note and overwrite the local settings',
-			() => {
-				// Trigged when the user press yes
-				const note = this.getActiveNote();
-				const { text } = note.attributes;
-				let decoded;
-				try {
-					decoded = this.decode(JSON.parse(text));
-				} catch {
-					HumanMessage.error("This note don't contains the settings");
-					return;
-				}
+    loadSettings = () => {
+        // TODO: check that the current note has settimhs
+        uw.ConfirmationWindowFactory.openSimpleConfirmation(
+            'ModernStorage',
+            'This operation will load the settings of the current note and overwrite the local settings',
+            () => {
+                // Trigged when the user press yes
+                const note = this.getActiveNote();
+                const { text } = note.attributes;
+                let decoded;
+                try {
+                    decoded = this.decode(JSON.parse(text));
+                } catch {
+                    HumanMessage.error("This note don't contains the settings");
+                    return;
+                }
 
-				this.saveStorage(decoded);
-				location.reload();
-			},
-			() => {}
-		);
-	};
+                this.saveStorage(decoded);
+                location.reload();
+            },
+            () => { }
+        );
+    };
 
-	/* Return the current active note */
-	getActiveNote() {
-		const noteClass = $('.tab.selected').attr('class');
-		if (!noteClass) return null;
-		const noteX = noteClass.match(/note(\d+)/)[1];
-		const note_index = parseInt(noteX) - 1;
+    /* Return the current active note */
+    getActiveNote() {
+        const noteClass = $('.tab.selected').attr('class');
+        if (!noteClass) return null;
+        const noteX = noteClass.match(/note(\d+)/)[1];
+        const note_index = parseInt(noteX) - 1;
 
-		const collection = MM.getOnlyCollectionByName('PlayerNote');
-		if (!collection) return null;
-		let { models } = collection;
+        const collection = MM.getOnlyCollectionByName('PlayerNote');
+        if (!collection) return null;
+        let { models } = collection;
 
-		return models[note_index];
-	}
+        return models[note_index];
+    }
 }
 
 /* Setup autofarm in the window object */
