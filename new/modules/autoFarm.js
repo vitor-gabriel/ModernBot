@@ -29,14 +29,14 @@ class AutoFarm extends ModernUtil {
         this.checkCaptchaInterval = setInterval(() => {
             if (this.simulateCaptcha || $('.botcheck').length || $('#recaptcha_window').length) {
                 if (!this.captchaActive) {
-                    this.console.log('Captcha active, autobuild stopped working');
+                    this.console.log('Captcha active, autofarm stopped working');
                     this.beepCaptcha();
                     if (this.active) clearInterval(this.active);
                     this.captchaActive = true;
                 }
             } else {
                 if (this.captchaActive) {
-                    this.console.log('Captcha resolved, autobuild resumed');
+                    this.console.log('Captcha resolved, autofarm resumed');
                     this.startInterval(); // Restart autobuild
                     this.captchaActive = false;
                 }
