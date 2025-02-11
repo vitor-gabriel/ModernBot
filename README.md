@@ -3,44 +3,15 @@
 
 ![screenshot](./img/screen.png)
 
-<br />
+<br/>
 
 ## Installation
 
-### <div align="center"> [Version 1.0](https://github.com/Sau1707/ModernBot/raw/refs/heads/main/dist/merged.user.js) </div>
+### <div align="center"> [Version 1.18.9a](https://raw.githubusercontent.com/vitor-gabriel/ModernBot/refs/heads/main/dist/modernbot.user.js) </div>
 
-Version 2.0 Work in progress
-
-ModerLite Work in progress
-
-<br />
+<br/>
 
 ## Script
-
-The script it's divided in modules under the `src` directory.
-
-by running in the main folder
-
-```
-npm install
-npm run dev
-```
-
-it will create a nodemon server that listen to changes in the code. Each time a file it's saved all the modules are merged into one under the dist folder
-
-Place this into a tampermokey script:
-
-```
-// ==UserScript==
-// @name         GrepoTest
-// @author       Sau1707
-// @description
-// @version      1.0.0
-// @match        http://*.grepolis.com/game/*
-// @match        https://*.grepolis.com/game/*
-// @require      file://C:\[path]\ModernBot\dist\modernbot.user.js
-// ==/UserScript==
-```
 
 In case of loading error `@require: couldn't load ` go to
 
@@ -50,7 +21,7 @@ chrome://extensions/
 
 Then select tampermoney and add `Allow access to file URLs`
 
-<br />
+<br/>
 
 ## Disclaimer
 
