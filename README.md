@@ -7,7 +7,7 @@
 
 ## Installation
 
-### <div align="center"> [Version 1.18.9a](https://raw.githubusercontent.com/vitor-gabriel/ModernBot/refs/heads/main/dist/modernbot.user.js) </div>
+### <div align="center"> [Version 1.20.0](https://raw.githubusercontent.com/vitor-gabriel/ModernBot/refs/heads/main/dist/modernbot.user.js) </div>
 
 <br/>
 
