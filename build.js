@@ -10,31 +10,20 @@ const utilsPath = path.join(__dirname, 'new/utils.js');
 const windowPath = path.join(__dirname, 'new/window.js');
 const stylePath = path.join(__dirname, 'new/style.css');
 
-// Function to get the new version number
-function getNextVersion() {
-    let version = '0.0.1';
+//voltar quando for dar commit
+// @updateURL    https://raw.githubusercontent.com/vitor-gabriel/ModernBot/refs/heads/main/dist/modernbot.user.js
+// @downloadURL  https://raw.githubusercontent.com/vitor-gabriel/ModernBot/refs/heads/main/dist/modernbot.user.js
 
-    // Check if the dist file already exists to retrieve the current version
-    if (fs.existsSync(distPath)) {
-        const content = fs.readFileSync(distPath, 'utf-8');
-        const versionMatch = content.match(/@version\s+(\d+\.\d+\.\d+)/);
-        if (versionMatch) {
-            const [major, minor, patch] = versionMatch[1].split('.').map(Number);
-            version = `${major}.${minor}.${patch + 1}`; // Increment patch version by 1
-        }
-    }
-
-    return version;
-}
-
-// Determine if the version should be updated based on the command-line argument
-const shouldUpdateVersion = process.argv.includes('--version');
-const version = shouldUpdateVersion ? getNextVersion() : '1.0.0'; // Default version if not updating
+//para desenvolver
+// @updateURL    file://D:\\Trabalho\\ModernBot\\dist\\modernbot.user.js
+// @downloadURL  file://D:\\Trabalho\\ModernBot\\dist\\modernbot.user.js
 
 // Header template with conditional version
 const header = `// ==UserScript==
 // @name         ModernBot
-// @version      ${version}
+// @version      1.20.0
+// @author       Sau1707
+// @manetainer   Leyarl
 // @description  A modern grepolis bot
 // @match        http://*.grepolis.com/game/*
 // @match        https://*.grepolis.com/game/*
@@ -90,7 +79,4 @@ fs.readdirSync(modulesPath).forEach(file => {
 });
 
 fs.appendFileSync(distPath, `\n})();`);
-if (shouldUpdateVersion) {
-    console.log(`modernbot.user.js created successfully in /dist with version ${version}.`);
-}
 

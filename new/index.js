@@ -28,6 +28,7 @@ class ModernBot {
         this.autoHide = new AutoHide(this.console, this.storage);
         this.antiRage = new AntiRage(this.console, this.storage);
         this.autoTrade = new AutoTrade(this.console, this.storage);
+        this.notifyGold = new NotifyGold(this.console, this.storage);
 
         this.settingsFactory = new createGrepoWindow({
             id: 'MODERN_BOT',
@@ -48,16 +49,16 @@ class ModernBot {
                     title: 'Train',
                     id: 'train',
                     render: this.settingsTrain,
-                } /*
-				{
-					title: 'Trade',
-					id: 'trade',
-					render: this.settingsTrade,
-				},*/,
+                },
                 {
                     title: 'Mix',
                     id: 'mix',
                     render: this.settingsMix,
+                },
+                {
+                    title: 'Gold Notifier',
+                    id: 'telegram',
+                    render: this.settingsNotifier,
                 },
                 {
                     title: 'Console',
@@ -91,6 +92,12 @@ class ModernBot {
         html += this.autoBootcamp.settings();
         html += this.autoParty.settings();
         html += this.autoHide.settings();
+        return html;
+    };
+
+    settingsNotifier = () => {
+        let html = '';
+        html += this.notifyGold.settings();
         return html;
     };
 
