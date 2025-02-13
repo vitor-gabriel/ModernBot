@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         ModernBot
-// @version      1.20.0
+// @version      1.20.1
 // @author       Sau1707
 // @manetainer   Leyarl
 // @description  A modern grepolis bot
 // @match        http://*.grepolis.com/game/*
 // @match        https://*.grepolis.com/game/*
-// @updateURL    file://D:\Trabalho\ModernBot\dist\modernbot.user.js
-// @downloadURL  file://D:\Trabalho\ModernBot\dist\modernbot.user.js
+// @updateURL    https://raw.githubusercontent.com/vitor-gabriel/ModernBot/refs/heads/main/dist/modernbot.user.js
+// @downloadURL  https://raw.githubusercontent.com/vitor-gabriel/ModernBot/refs/heads/main/dist/modernbot.user.js
 // @icon         https://raw.githubusercontent.com/Sau1707/ModernBot/main/img/gear.png
 // @require      http://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
 // ==/UserScript==
@@ -3904,7 +3904,7 @@ class NotifyGold extends ModernUtil {
         // Chama a função de notificação a cada 10 minutos (600000ms)
         this.notificationInterval = setInterval(() => {
             this.fetchData();
-        }, 3000); // 10 minutos
+        }, 600000); // 10 minutos
     }
 
     stopInterval() {
