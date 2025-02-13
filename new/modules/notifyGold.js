@@ -25,7 +25,7 @@ class NotifyGold extends ModernUtil {
 
         uw.gpAjax.ajaxGet('frontend_bridge', 'execute', data)
             .done(response => this.handleResponse(response))
-            .fail(e => console.log('Erro ao buscar dados:', e));
+            .fail(e => self.console.log('Erro ao buscar dados:', e));
     }
 
     handleResponse(response) {
@@ -34,22 +34,27 @@ class NotifyGold extends ModernUtil {
             const message = this.calculatedMarket(this.town_name, parsedData.json);
             this.checkTelegramAvailability(message);
         } catch (e) {
-            console.log("Erro ao parsear JSON:", e);
+            self.console.log("Erro ao parsear JSON:", e);
         }
     }
 
     checkTelegramAvailability(message) {
+        if (message === null || message === '') {
+            self.console.log("Nada para enviar ao Telegram.");
+            return;
+        }
         $.ajax({
             url: this.url,
             type: "GET",
             success: response => this.handleTelegramResponse(response, message),
             error: () => uw.HumanMessage.error("Erro ao verificar Telegram.")
         });
+
     }
 
     handleTelegramResponse(response, message) {
         if (response.result.length === 0) {
-            console.log("Bot Telegram indisponível.");
+            self.console.log("Bot Telegram indisponível.");
             return;
         }
 
