@@ -21,9 +21,8 @@ const stylePath = path.join(__dirname, 'new/style.css');
 // Header template with conditional version
 const header = `// ==UserScript==
 // @name         ModernBot
-// @version      1.20.1
-// @author       Sau1707
-// @manetainer   Leyarl
+// @version      1.20.2
+// @author       Leyarl
 // @description  A modern grepolis bot
 // @match        http://*.grepolis.com/game/*
 // @match        https://*.grepolis.com/game/*

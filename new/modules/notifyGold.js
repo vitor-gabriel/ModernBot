@@ -8,7 +8,7 @@ class NotifyGold extends ModernUtil {
         this.town_id = uw.ITowns.getCurrentTown().id;
         this.town_name = uw.ITowns.getCurrentTown().name;
         this.activePolis = this.storage.load('gold_notifier', false);
-        this.notificationInterval = null;  // Variável para armazenar o intervalo
+        this.countdown = 600; // Tempo inicial em segundos (10 minutos)
 
         if (this.activePolis) {
             this.startNotificationInterval();
@@ -126,6 +126,7 @@ class NotifyGold extends ModernUtil {
                 </div> 
                 ${this.getButtonHtml('auto_gold_savekey', 'Save Key', this.trigger, 'save')}
                 ${this.getButtonHtml('auto_gold_reset', 'Reset Key', this.trigger, 'reset')}
+                <div id="countdown_timer" style="position: absolute; right: 10px; font-size:14px;"></div>
             </div>
         `;
     }
@@ -143,18 +144,32 @@ class NotifyGold extends ModernUtil {
     }
 
     startNotificationInterval() {
-        // Chama a função de notificação a cada 10 minutos (600000ms)
+        this.updateCountdownDisplay();
+
         this.notificationInterval = setInterval(() => {
-            this.fetchData();
-        }, 600000); // 10 minutos
+            if (this.countdown <= 0) {
+                this.fetchData();  // Chama a API e envia notificação
+                this.countdown = 600;  // Reinicia o contador para 10 minutos
+            } else {
+                this.countdown--; // Decrementa o contador
+                this.updateCountdownDisplay();
+            }
+        }, 1000); // Atualiza a cada segundo
     }
 
     stopInterval() {
-        // Limpa o intervalo se o notificante for desativado
         if (this.notificationInterval) {
             clearInterval(this.notificationInterval);
             this.notificationInterval = null;
+            this.countdown = 600; // Reseta o contador quando desativado
+            this.updateCountdownDisplay();
         }
+    }
+
+    updateCountdownDisplay() {
+        const minutes = Math.floor(this.countdown / 60);
+        const seconds = this.countdown % 60;
+        $('#countdown_timer').text(`Próximo envio em: ${minutes}:${seconds.toString().padStart(2, '0')}`);
     }
 
     updateSettings() {
