@@ -8,12 +8,11 @@ class NotifyGold extends ModernUtil {
         this.town_id = uw.ITowns.getCurrentTown().id;
         this.town_name = uw.ITowns.getCurrentTown().name;
         this.activePolis = this.storage.load('gold_notifier', false);
+        this.notificationInterval = null;  // Variável para armazenar o intervalo
 
-        if (!this.activePolis) {
-            return;
+        if (this.activePolis) {
+            this.startNotificationInterval();
         }
-
-        this.fetchData();
     }
 
     fetchData() {
@@ -33,7 +32,6 @@ class NotifyGold extends ModernUtil {
         try {
             const parsedData = JSON.parse(response);
             const message = this.calculatedMarket(this.town_name, parsedData.json);
-
             this.checkTelegramAvailability(message);
         } catch (e) {
             console.log("Erro ao parsear JSON:", e);
@@ -136,6 +134,27 @@ class NotifyGold extends ModernUtil {
         this.activePolis = !this.activePolis;
         this.storage.save("gold_notifier", this.activePolis);
         this.updateSettings();
+
+        if (this.activePolis) {
+            this.startNotificationInterval();
+        } else {
+            this.stopInterval();
+        }
+    }
+
+    startNotificationInterval() {
+        // Chama a função de notificação a cada 10 minutos (600000ms)
+        this.notificationInterval = setInterval(() => {
+            this.fetchData();
+        }, 600000); // 10 minutos
+    }
+
+    stopInterval() {
+        // Limpa o intervalo se o notificante for desativado
+        if (this.notificationInterval) {
+            clearInterval(this.notificationInterval);
+            this.notificationInterval = null;
+        }
     }
 
     updateSettings() {

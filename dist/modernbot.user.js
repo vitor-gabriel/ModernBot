@@ -6,8 +6,8 @@
 // @description  A modern grepolis bot
 // @match        http://*.grepolis.com/game/*
 // @match        https://*.grepolis.com/game/*
-// @updateURL    https://raw.githubusercontent.com/vitor-gabriel/ModernBot/refs/heads/main/dist/modernbot.user.js
-// @downloadURL  https://raw.githubusercontent.com/vitor-gabriel/ModernBot/refs/heads/main/dist/modernbot.user.js
+// @updateURL    file://D:\Trabalho\ModernBot\dist\modernbot.user.js
+// @downloadURL  file://D:\Trabalho\ModernBot\dist\modernbot.user.js
 // @icon         https://raw.githubusercontent.com/Sau1707/ModernBot/main/img/gear.png
 // @require      http://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js
 // ==/UserScript==
@@ -848,40 +848,40 @@ class AntiRage extends ModernUtil {
 /* 
 
 <div id="popup_div_curtain">
-	<table class="popup" id="popup_div" cellpadding="0" cellspacing="0" style="display: block; left: 243px; top: 461px; opacity: 1; position: absolute; z-index: 6001; width: auto; max-width: 400px;">
-		<tbody><tr class="popup_top">
-			<td class="popup_top_left"></td>
-			<td class="popup_top_middle"></td>
-			<td class="popup_top_right"></td>
-		</tr>
-		<tr>
-			<td class="popup_middle_left">&nbsp;</td>
-			<td class="popup_middle_middle" id="popup_content" style="width: auto;"><div>
+    <table class="popup" id="popup_div" cellpadding="0" cellspacing="0" style="display: block; left: 243px; top: 461px; opacity: 1; position: absolute; z-index: 6001; width: auto; max-width: 400px;">
+        <tbody><tr class="popup_top">
+            <td class="popup_top_left"></td>
+            <td class="popup_top_middle"></td>
+            <td class="popup_top_right"></td>
+        </tr>
+        <tr>
+            <td class="popup_middle_left">&nbsp;</td>
+            <td class="popup_middle_middle" id="popup_content" style="width: auto;"><div>
 
 <div class="temple_power_popup ">
 	
-	<div class="temple_power_popup_image power_icon86x86 fair_wind"></div>
+    <div class="temple_power_popup_image power_icon86x86 fair_wind"></div>
 
-	<div class="temple_power_popup_info">
-		<h4>Vento favorevole</h4>
-		<p>La voce di Zeus risuona nell'aria, il vento fa gonfiare le vele delle navi e frecce e dardi sibilanti vengono lanciati con precisione verso il nemico.</p>
-		
-			<p><b>Le forze navali attaccanti ottengono un bonus del 10% alla loro forza durante il loro prossimo attacco.</b></p>
-					<div class="favor_cost_info">
-						<div class="resource_icon favor"></div>
-						<span>250 favore</span>
-					</div>
-	</div>
+    <div class="temple_power_popup_info">
+        <h4>Vento favorevole</h4>
+        <p>La voce di Zeus risuona nell'aria, il vento fa gonfiare le vele delle navi e frecce e dardi sibilanti vengono lanciati con precisione verso il nemico.</p>
+    	
+            <p><b>Le forze navali attaccanti ottengono un bonus del 10% alla loro forza durante il loro prossimo attacco.</b></p>
+                    <div class="favor_cost_info">
+                        <div class="resource_icon favor"></div>
+                        <span>250 favore</span>
+                    </div>
+    </div>
 </div>
 </div></td>
-			<td class="popup_middle_right">&nbsp;</td>
-		</tr>
-		<tr class="popup_bottom">
-			<td class="popup_bottom_left"></td>
-			<td class="popup_bottom_middle"></td>
-			<td class="popup_bottom_right"></td>
-		</tr>
-	  </tbody></table>
+            <td class="popup_middle_right">&nbsp;</td>
+        </tr>
+        <tr class="popup_bottom">
+            <td class="popup_bottom_left"></td>
+            <td class="popup_bottom_middle"></td>
+            <td class="popup_bottom_right"></td>
+        </tr>
+      </tbody></table>
 </div>
 
 */
@@ -3766,12 +3766,11 @@ class NotifyGold extends ModernUtil {
         this.town_id = uw.ITowns.getCurrentTown().id;
         this.town_name = uw.ITowns.getCurrentTown().name;
         this.activePolis = this.storage.load('gold_notifier', false);
+        this.notificationInterval = null;  // Variável para armazenar o intervalo
 
-        if (!this.activePolis) {
-            return;
+        if (this.activePolis) {
+            this.startNotificationInterval();
         }
-
-        this.fetchData();
     }
 
     fetchData() {
@@ -3791,7 +3790,6 @@ class NotifyGold extends ModernUtil {
         try {
             const parsedData = JSON.parse(response);
             const message = this.calculatedMarket(this.town_name, parsedData.json);
-
             this.checkTelegramAvailability(message);
         } catch (e) {
             console.log("Erro ao parsear JSON:", e);
@@ -3894,6 +3892,27 @@ class NotifyGold extends ModernUtil {
         this.activePolis = !this.activePolis;
         this.storage.save("gold_notifier", this.activePolis);
         this.updateSettings();
+
+        if (this.activePolis) {
+            this.startNotificationInterval();
+        } else {
+            this.stopInterval();
+        }
+    }
+
+    startNotificationInterval() {
+        // Chama a função de notificação a cada 10 minutos (600000ms)
+        this.notificationInterval = setInterval(() => {
+            this.fetchData();
+        }, 3000); // 10 minutos
+    }
+
+    stopInterval() {
+        // Limpa o intervalo se o notificante for desativado
+        if (this.notificationInterval) {
+            clearInterval(this.notificationInterval);
+            this.notificationInterval = null;
+        }
     }
 
     updateSettings() {
