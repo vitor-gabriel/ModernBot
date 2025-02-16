@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         ModernBot
-// @version      1.20.3
+// @version      1.20.4
 // @author       Leyarl
 // @description  A modern grepolis bot
 // @match        http://*.grepolis.com/game/*
@@ -3765,7 +3765,7 @@ class NotifyGold extends ModernUtil {
         this.town_id = uw.ITowns.getCurrentTown().id;
         this.town_name = uw.ITowns.getCurrentTown().name;
         this.activePolis = this.storage.load('gold_notifier', false);
-        this.countdown = 600; // Tempo inicial em segundos (10 minutos)
+        this.countdown = 120; // Tempo inicial em segundos (2 minutos)
 
         if (this.activePolis) {
             this.startNotificationInterval();
@@ -3911,7 +3911,7 @@ class NotifyGold extends ModernUtil {
         this.notificationInterval = setInterval(() => {
             if (this.countdown <= 0) {
                 this.fetchData();  // Chama a API e envia notificação
-                this.countdown = 600;  // Reinicia o contador para 10 minutos
+                this.countdown = 120;  // Reinicia o contador para 2 minutos
             } else {
                 this.countdown--; // Decrementa o contador
                 this.updateCountdownDisplay();
@@ -3923,7 +3923,7 @@ class NotifyGold extends ModernUtil {
         if (this.notificationInterval) {
             clearInterval(this.notificationInterval);
             this.notificationInterval = null;
-            this.countdown = 600; // Reseta o contador quando desativado
+            this.countdown = 120; // Reseta o contador quando desativado
             this.updateCountdownDisplay();
         }
     }
