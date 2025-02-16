@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         ModernBot
-// @version      1.20.2
+// @version      1.20.3
 // @author       Leyarl
 // @description  A modern grepolis bot
 // @match        http://*.grepolis.com/game/*
@@ -113,7 +113,7 @@
     z-index: 10;
     position: absolute;
     top: 52px !important;
-    right: 116px !important;
+    right: 0px !important;
 }
 
 .console_modernbot {
