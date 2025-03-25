@@ -243,4 +243,4 @@ const loader = setInterval(() => {
         uw.modernBot.loop();
     }, 250);
 
-}, 2000);
+}, Math.round((Math.random() * (8 - 3) + 3)) * 1000);
