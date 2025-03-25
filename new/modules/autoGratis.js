@@ -72,11 +72,11 @@ class AutoGratis extends ModernUtil {
             },
             "town_id": town_id
         };
-    
+
         // Add console log
         this.console.log(`${uw.ITowns.towns[town_id].getName()}: calling gratis for order ${order_id}`);
-    
+
         uw.gpAjax.ajaxPost('frontend_bridge', 'execute', data);
     };
-    
+
 }

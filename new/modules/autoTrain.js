@@ -401,10 +401,10 @@ class AutoTrain extends ModernUtil {
             amount: count,
             town_id: town_id,
         };
-    
+
         // Add console log
         this.console.log(`${uw.ITowns.towns[town_id].getName()}: training ${count} ${unit}`);
-    
+
         uw.gpAjax.ajaxPost('building_barracks', 'build', data);
     };
 
