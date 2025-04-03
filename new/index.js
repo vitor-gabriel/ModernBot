@@ -170,4 +170,4 @@ const loader = setInterval(() => {
     if ($("#loader").length > 0) return;
     uw.modernBot = new ModernBot();
     clearInterval(loader);
-}, 100);
+}, 3000);
