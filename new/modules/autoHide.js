@@ -58,7 +58,7 @@ class AutoHide extends ModernUtil {
                 <div style="position: absolute; right: 10px; top: 4px; font-size: 10px;"> (click to toggle) </div>
             </div>
             <div style="padding: 5px; font-weight: 600">
-                Check every 5 seconds, if there is more then 15000 iron store it in the hide
+                Check every 5 seconds, if there 80% of the resources are available, store the remaining resources.
             </div>    
         </div>
         `;
@@ -94,7 +94,6 @@ class AutoHide extends ModernUtil {
             let { iron, storage } = town.resources();
             let hide = town.buildings().attributes.hide
 
-            console.log(town_id, hide)
             if (hide == 10 && ((iron / storage) > 0.8)) {
                 let deposit = iron - (storage * 0.8)
                 if (deposit > 1000) {
