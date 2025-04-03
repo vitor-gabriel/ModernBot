@@ -1,4 +1,5 @@
 class ModernUtil {
+    /* CONSTANTS */
 
     REQUIREMENTS = {
         sword: {},
@@ -14,12 +15,42 @@ class ModernUtil {
         attack_ship: { research: 'attack_ship', building: 'docks', level: 1 },
         trireme: { research: 'trireme', building: 'docks', level: 1 },
         colonize_ship: { research: 'colonize_ship', building: 'docks', level: 10 },
+        siren: { building: 'temple', level: 6 },
+        satyr: { building: 'temple', level: 5 },
+        manticore: { building: 'temple', level: 15 },
+        minotaur: { building: 'temple', level: 10 },
+        sea_monster: { building: 'temple', level: 22 },
+        zyklop: { building: 'temple', level: 12 },
+        griffin: { building: 'temple', level: 15 },
+        calydonian_boar: { building: 'temple', level: 10 },
+        harpy: { building: 'temple', level: 5 },
+        medusa: { building: 'temple', level: 10 },
+        centaur: { building: 'temple', level: 4 },
+        pegasus: { building: 'temple', level: 12 },
+        cerberus: { building: 'temple', level: 10 },
+        fury: { building: 'temple', level: 16 },
+        spartoi: { building: 'temple', level: 4 },
+        ladon: { building: 'temple', level: 15 }
     };
 
     constructor(console, storage) {
         this.console = console;
         this.storage = storage;
     }
+    /* Usage async this.sleep(ms) -> stop the code for ms */
+    sleep = (ms, stdDev) => {
+        // Check if a standard deviation is not provided
+        if (typeof stdDev === 'undefined') return new Promise(resolve => setTimeout(resolve, ms));
+
+        const mean = ms;
+        let u = 0, v = 0;
+        while (u === 0) u = Math.random(); // Converting [0,1) to (0,1)
+        while (v === 0) v = Math.random();
+        let num = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+
+        num = num * stdDev + mean; // Scale and translate to desired mean and stdDev
+        return new Promise(resolve => setTimeout(resolve, num));
+    };
 
     /**
      * Generate a list of town IDs that are located on large islands.
@@ -67,31 +98,17 @@ class ModernUtil {
       </div>`;
     }
 
-    saveSettings(id, settings) {
-        localStorage.setItem(`modern_settings_${id}`, JSON.stringify(settings));
-    }
-
-    loadSettings(id, defaultSettings) {
-        const settings = localStorage.getItem(`modern_settings_${id}`);
-        if (!settings) return defaultSettings;
-        return JSON.parse(settings);
-    }
-
-    sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
     /**
-    * Returns the HTML for a game title with a clickable header that toggles a function.
-    *
-    * @param {string} id - The ID for the HTML element.
-    * @param {string} text - The text to display in the title.
-    * @param {function} fn - The function to toggle.
-    * @param {string|number} props - The properties to pass to the function.
-    * @param {boolean} enable - Whether the title is enabled or not.
-    * @param {string} [desc='(click to toggle)'] - The description to display.
-    * @returns {string} The HTML for the game title.
-    */
+     * Returns the HTML for a game title with a clickable header that toggles a function.
+     *
+     * @param {string} id - The ID for the HTML element.
+     * @param {string} text - The text to display in the title.
+     * @param {function} fn - The function to toggle.
+     * @param {string|number} props - The properties to pass to the function.
+     * @param {boolean} enable - Whether the title is enabled or not.
+     * @param {string} [desc='(click to toggle)'] - The description to display.
+     * @returns {string} The HTML for the game title.
+     */
     getTitleHtml(id, text, fn, props, enable, desc = '(click to toggle)') {
         const name = this.constructor.name.charAt(0).toLowerCase() + this.constructor.name.slice(1);
         props = isNaN(parseInt(props)) && props ? `"${props}"` : props;
@@ -132,6 +149,7 @@ class ModernUtil {
     isActive(type) {
         return uw.GameDataPremium.isAdvisorActivated(type);
     }
+
 
     /**
      * const button = elements.createButton('id', 'text', fn);
@@ -254,4 +272,3 @@ class ModernUtil {
     }
 
 }
-

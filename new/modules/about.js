@@ -4,7 +4,7 @@ class About {
 		this.checkVersion();
 	}
 
-	settings = () => {};
+	settings = () => { };
 
 	checkVersion = async () => {
 		if (!GM_info) return;

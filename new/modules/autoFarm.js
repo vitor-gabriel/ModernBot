@@ -223,7 +223,7 @@ class AutoFarm extends ModernUtil {
         this.$count.css('color', isCaptainActive ? "#1aff1a" : "yellow");
     };
 
-    execute = async () => {
+    claim = async () => {
         const isCaptainActive = uw.GameDataPremium.isAdvisorActivated('captain');
         const polis_list = this.generateList();
 
@@ -315,7 +315,7 @@ class AutoFarm extends ModernUtil {
             clearInterval(this.active);
             this.active = null;
 
-            await this.execute();
+            await this.claim();
             this.active = setInterval(this.main, 1000);
 
             // Set the new timer 

@@ -1,19 +1,7 @@
-/*
-
-
-
-*/
-
+/* Setup autofarm in the window object */
 
 class ModernBot {
-    STOP_TIME = 1000 * 5;
-    ACTION_DELAY = 1000 * 0;
-
     constructor() {
-        this.lastInteraction = Date.now();
-        this.lastAction = Date.now();
-        this.loopActive = false;
-
         this.console = new BotConsole();
         this.storage = new ModernStorage();
 
@@ -26,6 +14,9 @@ class ModernBot {
         this.autoFarm = new AutoFarm(this.console, this.storage);
         this.$menu.append(this.autoFarm.$activity)
         this.$ui.append(this.autoFarm.$popup)
+
+        //const $farm = this.createActivity("url(https://gpit.innogamescdn.com/images/game/premium_features/feature_icons_2.08.png) no-repeat 0 -240px");
+        // this.$menu.append($farm, $divider.clone());
 
         this.autoGratis = new AutoGratis(this.console, this.storage);
         this.autoRuralLevel = new AutoRuralLevel(this.console, this.storage);
@@ -41,7 +32,7 @@ class ModernBot {
         this.settingsFactory = new createGrepoWindow({
             id: 'MODERN_BOT',
             title: 'ModernBot',
-            size: [845, 300],
+            size: [950, 300],
             tabs: [
                 {
                     title: 'Farm',
@@ -57,7 +48,12 @@ class ModernBot {
                     title: 'Train',
                     id: 'train',
                     render: this.settingsTrain,
-                },
+                } /*
+				{
+					title: 'Trade',
+					id: 'trade',
+					render: this.settingsTrade,
+				},*/,
                 {
                     title: 'Mix',
                     id: 'mix',
@@ -73,67 +69,6 @@ class ModernBot {
         });
 
         this.setup();
-    }
-
-
-    enableListeners() {
-        $(document).on('mousemove', () => {
-            this.lastInteraction = Date.now();
-            $("#modern_settings").removeClass("rotate-forever")
-        });
-
-        $(document).on('keydown', (e) => {
-            this.lastInteraction = Date.now();
-            $("#modern_settings").removeClass("rotate-forever")
-        });
-    }
-
-    async loop() {
-        // Check if the captcha is active or the user has interacted with the page
-        if (Date.now() - this.lastInteraction < this.STOP_TIME) return;
-        if ($('.botcheck').length || $('#recaptcha_window').length) {
-            if (!this.resolveCaptcha()) return;
-        }
-        if (Date.now() - this.lastAction < this.ACTION_DELAY) return;
-        // recaptcha_window / g-recaptcha / recaptcha_container / captcha_curtain
-
-        if (this.loopActive) return;
-        this.loopActive = true;
-
-        // The bot is active, ensure the settings icon is rotating
-        $("#modern_settings").addClass("rotate-forever")
-
-        // After each action, wait for the delay to pass
-        const randomDelay = Math.floor(Math.random() * 500) + 250; // Between 250ms and 750ms
-        await new Promise(resolve => setTimeout(resolve, randomDelay));
-
-        // Check if the farm is available
-        // Farm can be done in every island / Current town
-        const hasFarm = await this.autoFarm.execute();
-        if (hasFarm) {
-            console.log("Farm was executed");
-            this.lastAction = Date.now();
-            this.loopActive = false;
-            return;
-        };
-
-        // TODO: Check for building upgrades
-        // TODO: Check for research upgrades
-        // TODO: Check for rural trades / upgrades
-        // TODO: Check if the town has the bootcamp?
-        // TODO: Check if the gratis can be claimed
-        // TODO: Cave?
-        // TODO: Train & Heros?
-        this.loopActive = false;
-    }
-
-    resolveCaptcha() {
-        const captchaResponse = $('#g-recaptcha-response').val();
-        if (captchaResponse !== '') {
-            $('#recaptcha_window > div.btn_confirm.button_new').trigger('click');
-            return true;
-        }
-        return false;
     }
 
     settingsFarm = () => {
@@ -174,8 +109,7 @@ class ModernBot {
     setup = () => {
         /* Activate */
         this.settingsFactory.activate();
-        console.log('ModernBot is ready!', this.settingsFactory);
-        uw.$('.gods_area_buttons').append("<div class='circle_button modern_bot_settings' onclick='window.modernBot.settingsFactory.openWindow()'><div style='width: 27px; height: 27px; background: url(https://raw.githubusercontent.com/vitor-gabriel/ModernBot/main/img/gear.png) no-repeat 6px 5px' class='icon js-caption'></div></div>");
+        uw.$('.gods_area_buttons').append("<div class='circle_button modern_bot_settings' onclick='window.modernBot.settingsFactory.openWindow()'><div style='width: 27px; height: 27px; background: url(https://raw.githubusercontent.com/Sau1707/ModernBot/main/img/gear.png) no-repeat 6px 5px' class='icon js-caption'></div></div>");
 
         /* Add event to polis list menu */
         const editController = () => {
@@ -188,9 +122,9 @@ class ModernBot {
             const oldRender = townController.controller.town_groups_list_view.render;
             townController.controller.town_groups_list_view.render = function () {
                 oldRender.call(this);
-                const both = `<div style='position: absolute; background-image: url(https://raw.githubusercontent.com/vitor-gabriel/ModernBot/main/img/hammer_wrench.png); background-size: 19px 19px; margin: 1px; background-repeat: no-repeat; position: absolute; height: 20px; width: 25px; right: 18px;'></div>`;
-                const build = `<div style='background-image: url(https://raw.githubusercontent.com/vitor-gabriel/ModernBot/main/img/hammer_only.png); background-size: 19px 19px; margin: 1px; background-repeat: no-repeat; position: absolute; height: 20px; width: 25px; right: 18px;'></div>`;
-                const troop = `<div style='background-image: url(https://raw.githubusercontent.com/vitor-gabriel/ModernBot/main/img/wrench.png); background-size: 19px 19px; margin: 1px; background-repeat: no-repeat; position: absolute; height: 20px; width: 25px; right: 18px;'></div>`;
+                const both = `<div style='position: absolute; background-image: url(https://raw.githubusercontent.com/Sau1707/ModernBot/main/img/hammer_wrench.png); background-size: 19px 19px; margin: 1px; background-repeat: no-repeat; position: absolute; height: 20px; width: 25px; right: 18px;'></div>`;
+                const build = `<div style='background-image: url(https://raw.githubusercontent.com/Sau1707/ModernBot/main/img/hammer_only.png); background-size: 19px 19px; margin: 1px; background-repeat: no-repeat; position: absolute; height: 20px; width: 25px; right: 18px;'></div>`;
+                const troop = `<div style='background-image: url(https://raw.githubusercontent.com/Sau1707/ModernBot/main/img/wrench.png); background-size: 19px 19px; margin: 1px; background-repeat: no-repeat; position: absolute; height: 20px; width: 25px; right: 18px;'></div>`;
                 const townIds = Object.keys(uw.modernBot.autoBuild.towns_buildings);
                 const troopsIds = uw.modernBot.autoTrain.getActiveList().map(entry => entry.toString());
                 uw.$('.town_group_town').each(function () {
@@ -229,18 +163,11 @@ class ModernBot {
 
         return $middle
     }
-
 }
 
+// Load the bot when the loader is ready
 const loader = setInterval(() => {
     if ($("#loader").length > 0) return;
-    clearInterval(loader);
-
     uw.modernBot = new ModernBot();
-    uw.modernBot.enableListeners();
-
-    setInterval(() => {
-        uw.modernBot.loop();
-    }, 250);
-
-}, Math.round((Math.random() * (8 - 3) + 3)) * 1000);
+    clearInterval(loader);
+}, 100);

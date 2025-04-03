@@ -1,7 +1,7 @@
 class AutoTrain extends ModernUtil {
-    POWER_LIST = ['call_of_the_ocean', 'spartan_training', 'fertility_improvement'];
-    GROUND_ORDER = ['catapult', 'sword', 'archer', 'hoplite', 'slinger', 'rider', 'chariot'];
-    NAVAL_ORDER = ['small_transporter', 'bireme', 'trireme', 'attack_ship', 'big_transporter', 'demolition_ship', 'colonize_ship'];
+    POWER_LIST = ['call_of_the_ocean', 'fertility_improvement'];
+    GROUND_ORDER = ['catapult', 'sword', 'archer', 'hoplite', 'slinger', 'rider', 'chariot', 'satyr', 'manticore', 'minotaur', 'zyklop', 'harpy', 'medusa', 'centaur', 'pegasus', 'cerberus', 'fury', 'griffin', 'calydonian_boar', 'spartoi', 'ladon'];
+    NAVAL_ORDER = ['small_transporter', 'bireme', 'trireme', 'attack_ship', 'big_transporter', 'demolition_ship', 'colonize_ship', 'sea_monster', 'siren'];
     SHIFT_LEVELS = {
         catapult: [5, 5],
         sword: [200, 50],
@@ -204,17 +204,17 @@ class AutoTrain extends ModernUtil {
             </div>`;
         };
 
-        uw.$('#troops_lvl_buttons').html(`
+        let html_troops = `
         <div id="troops_settings_${town_id}">
             <div style="width: 600px; margin-bottom: 3px; display: inline-flex">
-            <a class="gp_town_link" href="${town.getLinkFragment()}">${town.getName()}</a> 
+            <a class="gp_town_link" href="${town.getLinkFragment()}">${town.getName()}</a>
             <p style="font-weight: bold; margin: 0px 5px"> [${town.getPoints()} pts] </p>
             <p style="font-weight: bold; margin: 0px 5px"> </p>
             <div class="population_icon_bot">
                 <p id="troops_lvl_population"> ${this.getTotalPopulation(town_id)} <p>
             </div>
             </div>
-            <div style="width: 831px; display: inline-flex; gap: 1px;">
+            <div style="width: 100%; display: inline-flex; gap: 1px;">
             ${getTroopHtml('sword', [400, 0])}
             ${getTroopHtml('archer', [50, 100])}
             ${getTroopHtml('hoplite', [300, 50])}
@@ -229,9 +229,45 @@ class AutoTrain extends ModernUtil {
             ${getTroopHtml('demolition_ship', [250, 0])}
             ${getTroopHtml('attack_ship', [150, 100])}
             ${getTroopHtml('trireme', [400, 250])}
-            ${getTroopHtml('colonize_ship', [50, 200])}
-            </div>
-        </div>`);
+            ${getTroopHtml('colonize_ship', [50, 200])}`;
+        switch (uw.ITowns.getCurrentTown().god()) {
+            case 'aphrodite':
+                html_troops += `${getTroopHtml('satyr', [100, 350])}`;
+                html_troops += `${getTroopHtml('siren', [200, 350])}`;
+                break;
+            case 'hades':
+                html_troops += `${getTroopHtml('cerberus', [200, 50])}`;
+                html_troops += `${getTroopHtml('fury', [0, 250])}`;
+                break;
+            case 'artemis':
+                html_troops += `${getTroopHtml('griffin', [100, 250])}`;
+                html_troops += `${getTroopHtml('calydonian_boar', [100, 150])}`;
+                break;
+            case 'hera':
+                html_troops += `${getTroopHtml('harpy', [150, 250])}`;
+                html_troops += `${getTroopHtml('medusa', [100, 300])}`;
+                break;
+            case 'ares':
+                html_troops += `${getTroopHtml('spartoi', [350, 350])}`;
+                html_troops += `${getTroopHtml('ladon', [300, 150])}`;
+                break;
+            case 'athena':
+                html_troops += `${getTroopHtml('pegasus', [350, 150])}`;
+                html_troops += `${getTroopHtml('centaur', [200, 0])}`;
+                break;
+            case 'zeus':
+                html_troops += `${getTroopHtml('manticore', [0, 300])}`;
+                html_troops += `${getTroopHtml('minotaur', [300, 300])}`;
+                break;
+            case 'poseidon':
+                html_troops += `${getTroopHtml('zyklop', [300, 400])}`;
+                html_troops += `${getTroopHtml('sea_monster', [150, 350])}`;
+                break;
+        }
+        html_troops += `</div>
+       </div>`;
+
+        uw.$('#troops_lvl_buttons').html(html_troops);
     };
 
     editTroopCount = (town_id, troop, count) => {
@@ -336,11 +372,25 @@ class AutoTrain extends ModernUtil {
         /* Get the duable ammount with the current resouces of the polis */
         let resources = town.resources();
         let discount = uw.GeneralModifications.getUnitBuildResourcesModification(town_id, uw.GameData.units[troop]);
+        let hero = uw.MM.getCollections().PlayerHero[0].getHeroOfTown(parseInt(town_id))
+        let favor_cost_modifier = 0;
+
+        if (hero && hero.getId() === 'anysia') {
+            favor_cost_modifier += 10 + hero.getLevel() * 1;
+        }
+
         let { wood, stone, iron } = uw.GameData.units[troop].resources;
+        let favor = Math.ceil((uw.GameData.units[troop].favor * (1 - (favor_cost_modifier / 100))));
         let w = resources.wood / Math.round(wood * discount);
         let s = resources.stone / Math.round(stone * discount);
         let i = resources.iron / Math.round(iron * discount);
-        let current = parseInt(Math.min(w, s, i));
+        let f = resources.favor / favor;
+        let current = 0;
+        if (uw.GameData.units[troop].favor > 0) {
+            current = parseInt(Math.min(w, s, i, f));
+        } else {
+            current = parseInt(Math.min(w, s, i));
+        }
 
         /* Check for free population */
         let duable_with_pop = parseInt(resources.population / uw.GameData.units[troop].population); // for each troop
@@ -349,7 +399,14 @@ class AutoTrain extends ModernUtil {
         let w_max = resources.storage / (wood * discount);
         let s_max = resources.storage / (stone * discount);
         let i_max = resources.storage / (iron * discount);
-        let max = parseInt(Math.min(w_max, s_max, i_max) * 0.85); // 0.8 it's the full percentual -> 80%
+        let favor_max = town.getMaxFavor() / favor;
+        let percent_settings = this.getPercentSettings();
+        let max = 0;
+        if (uw.GameData.units[troop].favor > 0) {
+            max = parseInt(Math.min(w_max, s_max, i_max, favor_max) * percent_settings);
+        } else {
+            max = parseInt(Math.min(w_max, s_max, i_max) * percent_settings);
+        }
         max = max > duable_with_pop ? duable_with_pop : max;
 
         if (max > count) {
@@ -360,6 +417,14 @@ class AutoTrain extends ModernUtil {
             return -1;
         }
     };
+
+    getPercentSettings() {
+        let percent_settings = 0.8;
+        if (this.percentual === 1) percent_settings = 0.8;
+        if (this.percentual === 2) percent_settings = 0.9;
+        if (this.percentual === 3) percent_settings = 1;
+        return percent_settings;
+    }
 
     /* Check the given town, for ground or land */
     checkPolis = (type, town_id) => {
@@ -372,10 +437,53 @@ class AutoTrain extends ModernUtil {
             count = this.getTroopCount(next, town_id);
             if (count < 0) return 0;
             if (count === 0) continue;
+            if (this.spell) {
+                this.castSpell(type, town_id)
+            }
             this.buildPost(town_id, next, count);
             return true;
         }
     };
+
+    castSpell = (type, town_id) => {
+
+        if (uw.ITowns.player_gods.attributes.hera_favor < 80) return;
+        if (uw.ITowns.player_gods.attributes.poseidon_favor < 60) return;
+
+        const { fragments } = uw.MM.getFirstTownAgnosticCollectionByName('CastedPowers');
+        const { models } = fragments[town_id];
+        const activePowerIds = new Set(models.map(obj => obj.attributes.power_id));
+
+        this.POWER_LIST.forEach(power => {
+            if (type === 'naval' && power === 'call_of_the_ocean' && !activePowerIds.has(power)) {
+                this.console.log(`Lançando poder obrigatório para NAVAL: ${power}`);
+                let data = {
+                    model_url: 'CastedPowers',
+                    action_name: 'cast',
+                    town_id: parseInt(town_id),
+                    arguments: {
+                        target_id: parseInt(town_id),
+                        power_id: 'call_of_the_ocean',
+                    },
+                };
+                uw.gpAjax.ajaxPost('frontend_bridge', 'execute', data);
+            }
+
+            if (type === 'ground' && power === 'fertility_improvement' && !activePowerIds.has(power)) {
+                this.console.log(`Lançando poder obrigatório para GROUND: ${power}`);
+                let data = {
+                    model_url: 'CastedPowers',
+                    action_name: 'cast',
+                    town_id: parseInt(town_id),
+                    arguments: {
+                        target_id: parseInt(town_id),
+                        power_id: 'fertility_improvement',
+                    },
+                };
+                uw.gpAjax.ajaxPost('frontend_bridge', 'execute', data);
+            }
+        });
+    }
 
     /* Return list of town that have power active */
     getPowerActive = () => {
@@ -410,8 +518,7 @@ class AutoTrain extends ModernUtil {
 
     /* return the active towns */
     getActiveList = () => {
-        if (!this.spell) return Object.keys(this.city_troops);
-        return this.getPowerActive();
+        return Object.keys(this.city_troops);
     };
 
     /* Main function, call in the loop */

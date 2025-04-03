@@ -1,7 +1,7 @@
 /* 
-    botConsole.log(message);
-    ideas:
-        - add colors  
+	botConsole.log(message);
+	ideas:
+		- add colors  
 */
 
 class BotConsole {

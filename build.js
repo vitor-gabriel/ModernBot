@@ -4,7 +4,6 @@ const path = require('path');
 // Define paths
 const distPath = path.join(__dirname, 'dist/modernbot.user.js');
 const modulesPath = path.join(__dirname, 'new/modules');
-const menuPath = path.join(__dirname, 'new/menu.js');
 const indexPath = path.join(__dirname, 'new/index.js');
 const utilsPath = path.join(__dirname, 'new/utils.js');
 const windowPath = path.join(__dirname, 'new/window.js');
@@ -83,7 +82,7 @@ fs.readdirSync(modulesPath).forEach(file => {
 });
 
 // Append menu.js and index.js
-[menuPath, indexPath].forEach(filePath => {
+[indexPath].forEach(filePath => {
     const content = fs.readFileSync(filePath, 'utf-8');
     const fileName = path.basename(filePath);
     fs.appendFileSync(distPath, `\n\n// File: ${fileName}\n${content}`);

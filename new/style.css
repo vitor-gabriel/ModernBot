@@ -91,42 +91,6 @@
     right: 116px !important;
 }
 
-.modern_active {
-    position: relative;
-    background-blend-mode: multiply;
-    /* Or another blend mode that achieves your effect */
-    background-color: rgba(0, 0, 0, 0.5);
-    /* Adjust color for blending */
-}
-
-
-.modern_title_description {
-    position: absolute;
-    right: 10px;
-    top: 4px;
-    font-size: 10px
-}
-
-.game_border .game_header.active {
-    filter: brightness(100%) saturate(186%) hue-rotate(241deg);
-}
-
-@keyframes rotateForever {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.rotate-forever {
-    animation: rotateForever 5s linear infinite;
-    transform-origin: center;
-    filter: hue-rotate(72deg) saturate(2.5);
-}
-
 .console_modernbot {
     width: 100%;
     height: 100%;
@@ -171,6 +135,22 @@
     width: 100%;
     display: inline-flex;
     justify-content: space-between;
+}
+
+@keyframes rotateForever {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.rotate-forever {
+    animation: rotateForever 5s linear infinite;
+    transform-origin: 16px 15px;
+    filter: hue-rotate(72deg) saturate(2.5);
 }
 
 .enabled .game_header {

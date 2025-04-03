@@ -2,7 +2,7 @@ class AutoHide extends ModernUtil {
     constructor(c, s) {
         super(c, s);
 
-        this.activePolis = this.storage.load('autohide_active', 0);
+        this.activePolis = this.storage.load('autohide_active', false);
 
         setInterval(this.main, 5000)
 
@@ -64,21 +64,14 @@ class AutoHide extends ModernUtil {
         `;
     };
 
-    toggle = (town_id) => {
-        let town = town_id ? uw.ITowns.towns[town_id] : uw.ITowns.getCurrentTown();
-        let hide = town.buildings().attributes.hide
-        if (this.activePolis == town.id) {
-            this.activePolis = 0
-        } else {
-            if (hide == 10) this.activePolis = town.id;
-            else uw.HumanMessage.error("Hide must be at level 10");
-        }
+    toggle = () => {
+        this.activePolis = !this.activePolis
         this.storage.save("autohide_active", this.activePolis)
-        this.updateSettings(town.id)
+        this.updateSettings()
     }
 
-    updateSettings = (town_id) => {
-        if (town_id == this.activePolis) {
+    updateSettings = () => {
+        if (this.activePolis) {
             $('#auto_cave_title').css({
                 'filter': 'brightness(100%) saturate(186%) hue-rotate(241deg)'
             });
@@ -92,12 +85,23 @@ class AutoHide extends ModernUtil {
         }
     }
 
-    main = () => {
-        if (this.activePolis == 0) return;
-        const town = uw.ITowns.towns[this.activePolis];
-        const { iron } = town.resources()
-        if (iron > 15000) {
-            this.storeIron(this.activePolis, iron)
+    main = async () => {
+        if (!this.activePolis) return;
+        const town_list = Object.keys(uw.ITowns.towns)
+
+        for (let town_id of town_list) {
+            let town = uw.ITowns.towns[town_id]
+            let { iron, storage } = town.resources();
+            let hide = town.buildings().attributes.hide
+
+            console.log(town_id, hide)
+            if (hide == 10 && ((iron / storage) > 0.8)) {
+                let deposit = iron - (storage * 0.8)
+                if (deposit > 1000) {
+                    this.storeIron(town_id, deposit)
+                    await this.sleep(500);
+                }
+            }
         }
     }
 

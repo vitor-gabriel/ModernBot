@@ -120,7 +120,7 @@ class ModernStorage extends Compressor {
 				const content = this.saveSettingsNote(note.id);
 				$('.preview_box').text(content);
 			},
-			() => {}
+			() => { }
 		);
 	};
 
@@ -144,7 +144,7 @@ class ModernStorage extends Compressor {
 				this.saveStorage(decoded);
 				location.reload();
 			},
-			() => {}
+			() => { }
 		);
 	};
 

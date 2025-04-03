@@ -115,42 +115,6 @@
     right: 116px !important;
 }
 
-.modern_active {
-    position: relative;
-    background-blend-mode: multiply;
-    /* Or another blend mode that achieves your effect */
-    background-color: rgba(0, 0, 0, 0.5);
-    /* Adjust color for blending */
-}
-
-
-.modern_title_description {
-    position: absolute;
-    right: 10px;
-    top: 4px;
-    font-size: 10px
-}
-
-.game_border .game_header.active {
-    filter: brightness(100%) saturate(186%) hue-rotate(241deg);
-}
-
-@keyframes rotateForever {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.rotate-forever {
-    animation: rotateForever 5s linear infinite;
-    transform-origin: center;
-    filter: hue-rotate(72deg) saturate(2.5);
-}
-
 .console_modernbot {
     width: 100%;
     height: 100%;
@@ -197,6 +161,22 @@
     justify-content: space-between;
 }
 
+@keyframes rotateForever {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.rotate-forever {
+    animation: rotateForever 5s linear infinite;
+    transform-origin: 16px 15px;
+    filter: hue-rotate(72deg) saturate(2.5);
+}
+
 .enabled .game_header {
     filter: brightness(100%) saturate(186%) hue-rotate(241deg);
 }`;
@@ -205,6 +185,7 @@
 
 // File: utils.js
 class ModernUtil {
+    /* CONSTANTS */
 
     REQUIREMENTS = {
         sword: {},
@@ -220,12 +201,42 @@ class ModernUtil {
         attack_ship: { research: 'attack_ship', building: 'docks', level: 1 },
         trireme: { research: 'trireme', building: 'docks', level: 1 },
         colonize_ship: { research: 'colonize_ship', building: 'docks', level: 10 },
+        siren: { building: 'temple', level: 6 },
+        satyr: { building: 'temple', level: 5 },
+        manticore: { building: 'temple', level: 15 },
+        minotaur: { building: 'temple', level: 10 },
+        sea_monster: { building: 'temple', level: 22 },
+        zyklop: { building: 'temple', level: 12 },
+        griffin: { building: 'temple', level: 15 },
+        calydonian_boar: { building: 'temple', level: 10 },
+        harpy: { building: 'temple', level: 5 },
+        medusa: { building: 'temple', level: 10 },
+        centaur: { building: 'temple', level: 4 },
+        pegasus: { building: 'temple', level: 12 },
+        cerberus: { building: 'temple', level: 10 },
+        fury: { building: 'temple', level: 16 },
+        spartoi: { building: 'temple', level: 4 },
+        ladon: { building: 'temple', level: 15 }
     };
 
     constructor(console, storage) {
         this.console = console;
         this.storage = storage;
     }
+    /* Usage async this.sleep(ms) -> stop the code for ms */
+    sleep = (ms, stdDev) => {
+        // Check if a standard deviation is not provided
+        if (typeof stdDev === 'undefined') return new Promise(resolve => setTimeout(resolve, ms));
+
+        const mean = ms;
+        let u = 0, v = 0;
+        while (u === 0) u = Math.random(); // Converting [0,1) to (0,1)
+        while (v === 0) v = Math.random();
+        let num = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+
+        num = num * stdDev + mean; // Scale and translate to desired mean and stdDev
+        return new Promise(resolve => setTimeout(resolve, num));
+    };
 
     /**
      * Generate a list of town IDs that are located on large islands.
@@ -273,31 +284,17 @@ class ModernUtil {
       </div>`;
     }
 
-    saveSettings(id, settings) {
-        localStorage.setItem(`modern_settings_${id}`, JSON.stringify(settings));
-    }
-
-    loadSettings(id, defaultSettings) {
-        const settings = localStorage.getItem(`modern_settings_${id}`);
-        if (!settings) return defaultSettings;
-        return JSON.parse(settings);
-    }
-
-    sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
     /**
-    * Returns the HTML for a game title with a clickable header that toggles a function.
-    *
-    * @param {string} id - The ID for the HTML element.
-    * @param {string} text - The text to display in the title.
-    * @param {function} fn - The function to toggle.
-    * @param {string|number} props - The properties to pass to the function.
-    * @param {boolean} enable - Whether the title is enabled or not.
-    * @param {string} [desc='(click to toggle)'] - The description to display.
-    * @returns {string} The HTML for the game title.
-    */
+     * Returns the HTML for a game title with a clickable header that toggles a function.
+     *
+     * @param {string} id - The ID for the HTML element.
+     * @param {string} text - The text to display in the title.
+     * @param {function} fn - The function to toggle.
+     * @param {string|number} props - The properties to pass to the function.
+     * @param {boolean} enable - Whether the title is enabled or not.
+     * @param {string} [desc='(click to toggle)'] - The description to display.
+     * @returns {string} The HTML for the game title.
+     */
     getTitleHtml(id, text, fn, props, enable, desc = '(click to toggle)') {
         const name = this.constructor.name.charAt(0).toLowerCase() + this.constructor.name.slice(1);
         props = isNaN(parseInt(props)) && props ? `"${props}"` : props;
@@ -338,6 +335,7 @@ class ModernUtil {
     isActive(type) {
         return uw.GameDataPremium.isAdvisorActivated(type);
     }
+
 
     /**
      * const button = elements.createButton('id', 'text', fn);
@@ -461,8 +459,6 @@ class ModernUtil {
 
 }
 
-
-
 // File: window.js
 /* 
     Create a new window
@@ -581,7 +577,7 @@ class About {
 		this.checkVersion();
 	}
 
-	settings = () => {};
+	settings = () => { };
 
 	checkVersion = async () => {
 		if (!GM_info) return;
@@ -597,7 +593,6 @@ class About {
 		console.log(lastVersion, installedVersion);
 	};
 }
-
 
 // Module: antiRage.js
 class AntiRage extends ModernUtil {
@@ -862,47 +857,6 @@ class AntiRage extends ModernUtil {
 	};
 }
 
-/* 
-
-<div id="popup_div_curtain">
-	<table class="popup" id="popup_div" cellpadding="0" cellspacing="0" style="display: block; left: 243px; top: 461px; opacity: 1; position: absolute; z-index: 6001; width: auto; max-width: 400px;">
-		<tbody><tr class="popup_top">
-			<td class="popup_top_left"></td>
-			<td class="popup_top_middle"></td>
-			<td class="popup_top_right"></td>
-		</tr>
-		<tr>
-			<td class="popup_middle_left">&nbsp;</td>
-			<td class="popup_middle_middle" id="popup_content" style="width: auto;"><div>
-
-<div class="temple_power_popup ">
-	
-	<div class="temple_power_popup_image power_icon86x86 fair_wind"></div>
-
-	<div class="temple_power_popup_info">
-		<h4>Vento favorevole</h4>
-		<p>La voce di Zeus risuona nell'aria, il vento fa gonfiare le vele delle navi e frecce e dardi sibilanti vengono lanciati con precisione verso il nemico.</p>
-		
-			<p><b>Le forze navali attaccanti ottengono un bonus del 10% alla loro forza durante il loro prossimo attacco.</b></p>
-					<div class="favor_cost_info">
-						<div class="resource_icon favor"></div>
-						<span>250 favore</span>
-					</div>
-	</div>
-</div>
-</div></td>
-			<td class="popup_middle_right">&nbsp;</td>
-		</tr>
-		<tr class="popup_bottom">
-			<td class="popup_bottom_left"></td>
-			<td class="popup_bottom_middle"></td>
-			<td class="popup_bottom_right"></td>
-		</tr>
-	  </tbody></table>
-</div>
-
-*/
-
 
 // Module: autoBootcamp.js
 class AutoBootcamp extends ModernUtil {
@@ -1111,7 +1065,6 @@ class AutoBootcamp extends ModernUtil {
         });
     };
 }
-
 
 // Module: autoBuild.js
 class AutoBuild extends ModernUtil {
@@ -1553,7 +1506,6 @@ class AutoBuild extends ModernUtil {
     };
 }
 
-
 // Module: autoFarm.js
 class AutoFarm extends ModernUtil {
     constructor(c, s) {
@@ -1780,7 +1732,7 @@ class AutoFarm extends ModernUtil {
         this.$count.css('color', isCaptainActive ? "#1aff1a" : "yellow");
     };
 
-    execute = async () => {
+    claim = async () => {
         const isCaptainActive = uw.GameDataPremium.isAdvisorActivated('captain');
         const polis_list = this.generateList();
 
@@ -1872,7 +1824,7 @@ class AutoFarm extends ModernUtil {
             clearInterval(this.active);
             this.active = null;
 
-            await this.execute();
+            await this.claim();
             this.active = setInterval(this.main, 1000);
 
             // Set the new timer 
@@ -1981,7 +1933,6 @@ class AutoFarm extends ModernUtil {
         });
 }
 
-
 // Module: autoGratis.js
 class AutoGratis extends ModernUtil {
     constructor(c, s) {
@@ -2066,13 +2017,12 @@ class AutoGratis extends ModernUtil {
 
 }
 
-
 // Module: autoHide.js
 class AutoHide extends ModernUtil {
     constructor(c, s) {
         super(c, s);
 
-        this.activePolis = this.storage.load('autohide_active', 0);
+        this.activePolis = this.storage.load('autohide_active', false);
 
         setInterval(this.main, 5000)
 
@@ -2134,21 +2084,14 @@ class AutoHide extends ModernUtil {
         `;
     };
 
-    toggle = (town_id) => {
-        let town = town_id ? uw.ITowns.towns[town_id] : uw.ITowns.getCurrentTown();
-        let hide = town.buildings().attributes.hide
-        if (this.activePolis == town.id) {
-            this.activePolis = 0
-        } else {
-            if (hide == 10) this.activePolis = town.id;
-            else uw.HumanMessage.error("Hide must be at level 10");
-        }
+    toggle = () => {
+        this.activePolis = !this.activePolis
         this.storage.save("autohide_active", this.activePolis)
-        this.updateSettings(town.id)
+        this.updateSettings()
     }
 
-    updateSettings = (town_id) => {
-        if (town_id == this.activePolis) {
+    updateSettings = () => {
+        if (this.activePolis) {
             $('#auto_cave_title').css({
                 'filter': 'brightness(100%) saturate(186%) hue-rotate(241deg)'
             });
@@ -2162,12 +2105,23 @@ class AutoHide extends ModernUtil {
         }
     }
 
-    main = () => {
-        if (this.activePolis == 0) return;
-        const town = uw.ITowns.towns[this.activePolis];
-        const { iron } = town.resources()
-        if (iron > 15000) {
-            this.storeIron(this.activePolis, iron)
+    main = async () => {
+        if (!this.activePolis) return;
+        const town_list = Object.keys(uw.ITowns.towns)
+
+        for (let town_id of town_list) {
+            let town = uw.ITowns.towns[town_id]
+            let { iron, storage } = town.resources();
+            let hide = town.buildings().attributes.hide
+
+            console.log(town_id, hide)
+            if (hide == 10 && ((iron / storage) > 0.8)) {
+                let deposit = iron - (storage * 0.8)
+                if (deposit > 1000) {
+                    this.storeIron(town_id, deposit)
+                    await this.sleep(500);
+                }
+            }
         }
     }
 
@@ -2401,7 +2355,6 @@ class AutoParty extends ModernUtil {
     };
 }
 
-
 // Module: autoRuralLevel.js
 class AutoRuralLevel extends ModernUtil {
     constructor(c, s) {
@@ -2603,7 +2556,6 @@ class AutoRuralLevel extends ModernUtil {
         uw.gpAjax.ajaxPost('frontend_bridge', 'execute', data);
     };
 }
-
 
 // Module: autoRuralTrade.js
 class AutoRuralTrade extends ModernUtil {
@@ -2923,12 +2875,11 @@ function autoTradeBot() {
 	}
 }
 
-
 // Module: autoTrain.js
 class AutoTrain extends ModernUtil {
-    POWER_LIST = ['call_of_the_ocean', 'spartan_training', 'fertility_improvement'];
-    GROUND_ORDER = ['catapult', 'sword', 'archer', 'hoplite', 'slinger', 'rider', 'chariot'];
-    NAVAL_ORDER = ['small_transporter', 'bireme', 'trireme', 'attack_ship', 'big_transporter', 'demolition_ship', 'colonize_ship'];
+    POWER_LIST = ['call_of_the_ocean', 'fertility_improvement'];
+    GROUND_ORDER = ['catapult', 'sword', 'archer', 'hoplite', 'slinger', 'rider', 'chariot', 'satyr', 'manticore', 'minotaur', 'zyklop', 'harpy', 'medusa', 'centaur', 'pegasus', 'cerberus', 'fury', 'griffin', 'calydonian_boar', 'spartoi', 'ladon'];
+    NAVAL_ORDER = ['small_transporter', 'bireme', 'trireme', 'attack_ship', 'big_transporter', 'demolition_ship', 'colonize_ship', 'sea_monster', 'siren'];
     SHIFT_LEVELS = {
         catapult: [5, 5],
         sword: [200, 50],
@@ -3131,17 +3082,17 @@ class AutoTrain extends ModernUtil {
             </div>`;
         };
 
-        uw.$('#troops_lvl_buttons').html(`
+        let html_troops = `
         <div id="troops_settings_${town_id}">
             <div style="width: 600px; margin-bottom: 3px; display: inline-flex">
-            <a class="gp_town_link" href="${town.getLinkFragment()}">${town.getName()}</a> 
+            <a class="gp_town_link" href="${town.getLinkFragment()}">${town.getName()}</a>
             <p style="font-weight: bold; margin: 0px 5px"> [${town.getPoints()} pts] </p>
             <p style="font-weight: bold; margin: 0px 5px"> </p>
             <div class="population_icon_bot">
                 <p id="troops_lvl_population"> ${this.getTotalPopulation(town_id)} <p>
             </div>
             </div>
-            <div style="width: 831px; display: inline-flex; gap: 1px;">
+            <div style="width: 100%; display: inline-flex; gap: 1px;">
             ${getTroopHtml('sword', [400, 0])}
             ${getTroopHtml('archer', [50, 100])}
             ${getTroopHtml('hoplite', [300, 50])}
@@ -3156,9 +3107,45 @@ class AutoTrain extends ModernUtil {
             ${getTroopHtml('demolition_ship', [250, 0])}
             ${getTroopHtml('attack_ship', [150, 100])}
             ${getTroopHtml('trireme', [400, 250])}
-            ${getTroopHtml('colonize_ship', [50, 200])}
-            </div>
-        </div>`);
+            ${getTroopHtml('colonize_ship', [50, 200])}`;
+        switch (uw.ITowns.getCurrentTown().god()) {
+            case 'aphrodite':
+                html_troops += `${getTroopHtml('satyr', [100, 350])}`;
+                html_troops += `${getTroopHtml('siren', [200, 350])}`;
+                break;
+            case 'hades':
+                html_troops += `${getTroopHtml('cerberus', [200, 50])}`;
+                html_troops += `${getTroopHtml('fury', [0, 250])}`;
+                break;
+            case 'artemis':
+                html_troops += `${getTroopHtml('griffin', [100, 250])}`;
+                html_troops += `${getTroopHtml('calydonian_boar', [100, 150])}`;
+                break;
+            case 'hera':
+                html_troops += `${getTroopHtml('harpy', [150, 250])}`;
+                html_troops += `${getTroopHtml('medusa', [100, 300])}`;
+                break;
+            case 'ares':
+                html_troops += `${getTroopHtml('spartoi', [350, 350])}`;
+                html_troops += `${getTroopHtml('ladon', [300, 150])}`;
+                break;
+            case 'athena':
+                html_troops += `${getTroopHtml('pegasus', [350, 150])}`;
+                html_troops += `${getTroopHtml('centaur', [200, 0])}`;
+                break;
+            case 'zeus':
+                html_troops += `${getTroopHtml('manticore', [0, 300])}`;
+                html_troops += `${getTroopHtml('minotaur', [300, 300])}`;
+                break;
+            case 'poseidon':
+                html_troops += `${getTroopHtml('zyklop', [300, 400])}`;
+                html_troops += `${getTroopHtml('sea_monster', [150, 350])}`;
+                break;
+        }
+        html_troops += `</div>
+       </div>`;
+
+        uw.$('#troops_lvl_buttons').html(html_troops);
     };
 
     editTroopCount = (town_id, troop, count) => {
@@ -3263,11 +3250,25 @@ class AutoTrain extends ModernUtil {
         /* Get the duable ammount with the current resouces of the polis */
         let resources = town.resources();
         let discount = uw.GeneralModifications.getUnitBuildResourcesModification(town_id, uw.GameData.units[troop]);
+        let hero = uw.MM.getCollections().PlayerHero[0].getHeroOfTown(parseInt(town_id))
+        let favor_cost_modifier = 0;
+
+        if (hero && hero.getId() === 'anysia') {
+            favor_cost_modifier += 10 + hero.getLevel() * 1;
+        }
+
         let { wood, stone, iron } = uw.GameData.units[troop].resources;
+        let favor = Math.ceil((uw.GameData.units[troop].favor * (1 - (favor_cost_modifier / 100))));
         let w = resources.wood / Math.round(wood * discount);
         let s = resources.stone / Math.round(stone * discount);
         let i = resources.iron / Math.round(iron * discount);
-        let current = parseInt(Math.min(w, s, i));
+        let f = resources.favor / favor;
+        let current = 0;
+        if (uw.GameData.units[troop].favor > 0) {
+            current = parseInt(Math.min(w, s, i, f));
+        } else {
+            current = parseInt(Math.min(w, s, i));
+        }
 
         /* Check for free population */
         let duable_with_pop = parseInt(resources.population / uw.GameData.units[troop].population); // for each troop
@@ -3276,7 +3277,14 @@ class AutoTrain extends ModernUtil {
         let w_max = resources.storage / (wood * discount);
         let s_max = resources.storage / (stone * discount);
         let i_max = resources.storage / (iron * discount);
-        let max = parseInt(Math.min(w_max, s_max, i_max) * 0.85); // 0.8 it's the full percentual -> 80%
+        let favor_max = town.getMaxFavor() / favor;
+        let percent_settings = this.getPercentSettings();
+        let max = 0;
+        if (uw.GameData.units[troop].favor > 0) {
+            max = parseInt(Math.min(w_max, s_max, i_max, favor_max) * percent_settings);
+        } else {
+            max = parseInt(Math.min(w_max, s_max, i_max) * percent_settings);
+        }
         max = max > duable_with_pop ? duable_with_pop : max;
 
         if (max > count) {
@@ -3287,6 +3295,14 @@ class AutoTrain extends ModernUtil {
             return -1;
         }
     };
+
+    getPercentSettings() {
+        let percent_settings = 0.8;
+        if (this.percentual === 1) percent_settings = 0.8;
+        if (this.percentual === 2) percent_settings = 0.9;
+        if (this.percentual === 3) percent_settings = 1;
+        return percent_settings;
+    }
 
     /* Check the given town, for ground or land */
     checkPolis = (type, town_id) => {
@@ -3299,10 +3315,53 @@ class AutoTrain extends ModernUtil {
             count = this.getTroopCount(next, town_id);
             if (count < 0) return 0;
             if (count === 0) continue;
+            if (this.spell) {
+                this.castSpell(type, town_id)
+            }
             this.buildPost(town_id, next, count);
             return true;
         }
     };
+
+    castSpell = (type, town_id) => {
+
+        if (uw.ITowns.player_gods.attributes.hera_favor < 80) return;
+        if (uw.ITowns.player_gods.attributes.poseidon_favor < 60) return;
+
+        const { fragments } = uw.MM.getFirstTownAgnosticCollectionByName('CastedPowers');
+        const { models } = fragments[town_id];
+        const activePowerIds = new Set(models.map(obj => obj.attributes.power_id));
+
+        this.POWER_LIST.forEach(power => {
+            if (type === 'naval' && power === 'call_of_the_ocean' && !activePowerIds.has(power)) {
+                this.console.log(`Lançando poder obrigatório para NAVAL: ${power}`);
+                let data = {
+                    model_url: 'CastedPowers',
+                    action_name: 'cast',
+                    town_id: parseInt(town_id),
+                    arguments: {
+                        target_id: parseInt(town_id),
+                        power_id: 'call_of_the_ocean',
+                    },
+                };
+                uw.gpAjax.ajaxPost('frontend_bridge', 'execute', data);
+            }
+
+            if (type === 'ground' && power === 'fertility_improvement' && !activePowerIds.has(power)) {
+                this.console.log(`Lançando poder obrigatório para GROUND: ${power}`);
+                let data = {
+                    model_url: 'CastedPowers',
+                    action_name: 'cast',
+                    town_id: parseInt(town_id),
+                    arguments: {
+                        target_id: parseInt(town_id),
+                        power_id: 'fertility_improvement',
+                    },
+                };
+                uw.gpAjax.ajaxPost('frontend_bridge', 'execute', data);
+            }
+        });
+    }
 
     /* Return list of town that have power active */
     getPowerActive = () => {
@@ -3337,8 +3396,7 @@ class AutoTrain extends ModernUtil {
 
     /* return the active towns */
     getActiveList = () => {
-        if (!this.spell) return Object.keys(this.city_troops);
-        return this.getPowerActive();
+        return Object.keys(this.city_troops);
     };
 
     /* Main function, call in the loop */
@@ -3359,9 +3417,9 @@ class AutoTrain extends ModernUtil {
 
 // Module: botConsole.js
 /* 
-    botConsole.log(message);
-    ideas:
-        - add colors  
+	botConsole.log(message);
+	ideas:
+		- add colors  
 */
 
 class BotConsole {
@@ -3395,7 +3453,6 @@ class BotConsole {
 		});
 	};
 }
-
 
 // Module: compressor.js
 class Compressor {
@@ -3552,7 +3609,6 @@ class Compressor {
 	}
 }
 
-
 // Module: modernStorage.js
 // TODO:
 // - disable note notifiation
@@ -3676,7 +3732,7 @@ class ModernStorage extends Compressor {
 				const content = this.saveSettingsNote(note.id);
 				$('.preview_box').text(content);
 			},
-			() => {}
+			() => { }
 		);
 	};
 
@@ -3700,7 +3756,7 @@ class ModernStorage extends Compressor {
 				this.saveStorage(decoded);
 				location.reload();
 			},
-			() => {}
+			() => { }
 		);
 	};
 
@@ -3719,59 +3775,11 @@ class ModernStorage extends Compressor {
 	}
 }
 
-
-// File: menu.js
-// Handle the creation of the menu
-
-// Title + toggle
-// Button plus text
-// Image plus action
-
-class ModernMenu {
-    constructor(tabs) {
-        this.settingsFactory = new createGrepoWindow({
-            id: 'MODERN_BOT',
-            title: 'ModernBot',
-            size: [845, 300],
-            tabs: tabs,
-            start_tab: 0,
-        });
-        this.settingsFactory.activate();
-
-        this.addIcon();
-    }
-
-    addIcon() {
-        // this.settingsFactory.activate();
-        const $gods_area_buttons = $('.gods_area_buttons')
-
-        const $circle_button = $('<div class="circle_button modern_bot_settings"></div>');
-        $circle_button.click(() => { this.settingsFactory.openWindow() });
-        const $icon = $('<div style="width: 27px; height: 27px; background: url(https://raw.githubusercontent.com/Sau1707/ModernBot/main/img/gear.png) no-repeat 6px 5px" class="icon js-caption"></div>');
-        $icon.attr("id", "modern_settings");
-
-        $circle_button.append($icon);
-        $gods_area_buttons.append($circle_button);
-    }
-}
-
 // File: index.js
-/*
-
-
-
-*/
-
+/* Setup autofarm in the window object */
 
 class ModernBot {
-    STOP_TIME = 1000 * 5;
-    ACTION_DELAY = 1000 * 0;
-
     constructor() {
-        this.lastInteraction = Date.now();
-        this.lastAction = Date.now();
-        this.loopActive = false;
-
         this.console = new BotConsole();
         this.storage = new ModernStorage();
 
@@ -3784,6 +3792,9 @@ class ModernBot {
         this.autoFarm = new AutoFarm(this.console, this.storage);
         this.$menu.append(this.autoFarm.$activity)
         this.$ui.append(this.autoFarm.$popup)
+
+        //const $farm = this.createActivity("url(https://gpit.innogamescdn.com/images/game/premium_features/feature_icons_2.08.png) no-repeat 0 -240px");
+        // this.$menu.append($farm, $divider.clone());
 
         this.autoGratis = new AutoGratis(this.console, this.storage);
         this.autoRuralLevel = new AutoRuralLevel(this.console, this.storage);
@@ -3799,7 +3810,7 @@ class ModernBot {
         this.settingsFactory = new createGrepoWindow({
             id: 'MODERN_BOT',
             title: 'ModernBot',
-            size: [845, 300],
+            size: [950, 300],
             tabs: [
                 {
                     title: 'Farm',
@@ -3815,7 +3826,12 @@ class ModernBot {
                     title: 'Train',
                     id: 'train',
                     render: this.settingsTrain,
-                },
+                } /*
+				{
+					title: 'Trade',
+					id: 'trade',
+					render: this.settingsTrade,
+				},*/,
                 {
                     title: 'Mix',
                     id: 'mix',
@@ -3831,67 +3847,6 @@ class ModernBot {
         });
 
         this.setup();
-    }
-
-
-    enableListeners() {
-        $(document).on('mousemove', () => {
-            this.lastInteraction = Date.now();
-            $("#modern_settings").removeClass("rotate-forever")
-        });
-
-        $(document).on('keydown', (e) => {
-            this.lastInteraction = Date.now();
-            $("#modern_settings").removeClass("rotate-forever")
-        });
-    }
-
-    async loop() {
-        // Check if the captcha is active or the user has interacted with the page
-        if (Date.now() - this.lastInteraction < this.STOP_TIME) return;
-        if ($('.botcheck').length || $('#recaptcha_window').length) {
-            if (!this.resolveCaptcha()) return;
-        }
-        if (Date.now() - this.lastAction < this.ACTION_DELAY) return;
-        // recaptcha_window / g-recaptcha / recaptcha_container / captcha_curtain
-
-        if (this.loopActive) return;
-        this.loopActive = true;
-
-        // The bot is active, ensure the settings icon is rotating
-        $("#modern_settings").addClass("rotate-forever")
-
-        // After each action, wait for the delay to pass
-        const randomDelay = Math.floor(Math.random() * 500) + 250; // Between 250ms and 750ms
-        await new Promise(resolve => setTimeout(resolve, randomDelay));
-
-        // Check if the farm is available
-        // Farm can be done in every island / Current town
-        const hasFarm = await this.autoFarm.execute();
-        if (hasFarm) {
-            console.log("Farm was executed");
-            this.lastAction = Date.now();
-            this.loopActive = false;
-            return;
-        };
-
-        // TODO: Check for building upgrades
-        // TODO: Check for research upgrades
-        // TODO: Check for rural trades / upgrades
-        // TODO: Check if the town has the bootcamp?
-        // TODO: Check if the gratis can be claimed
-        // TODO: Cave?
-        // TODO: Train & Heros?
-        this.loopActive = false;
-    }
-
-    resolveCaptcha() {
-        const captchaResponse = $('#g-recaptcha-response').val();
-        if (captchaResponse !== '') {
-            $('#recaptcha_window > div.btn_confirm.button_new').trigger('click');
-            return true;
-        }
-        return false;
     }
 
     settingsFarm = () => {
@@ -3932,8 +3887,7 @@ class ModernBot {
     setup = () => {
         /* Activate */
         this.settingsFactory.activate();
-        console.log('ModernBot is ready!', this.settingsFactory);
-        uw.$('.gods_area_buttons').append("<div class='circle_button modern_bot_settings' onclick='window.modernBot.settingsFactory.openWindow()'><div style='width: 27px; height: 27px; background: url(https://raw.githubusercontent.com/vitor-gabriel/ModernBot/main/img/gear.png) no-repeat 6px 5px' class='icon js-caption'></div></div>");
+        uw.$('.gods_area_buttons').append("<div class='circle_button modern_bot_settings' onclick='window.modernBot.settingsFactory.openWindow()'><div style='width: 27px; height: 27px; background: url(https://raw.githubusercontent.com/Sau1707/ModernBot/main/img/gear.png) no-repeat 6px 5px' class='icon js-caption'></div></div>");
 
         /* Add event to polis list menu */
         const editController = () => {
@@ -3946,9 +3900,9 @@ class ModernBot {
             const oldRender = townController.controller.town_groups_list_view.render;
             townController.controller.town_groups_list_view.render = function () {
                 oldRender.call(this);
-                const both = `<div style='position: absolute; background-image: url(https://raw.githubusercontent.com/vitor-gabriel/ModernBot/main/img/hammer_wrench.png); background-size: 19px 19px; margin: 1px; background-repeat: no-repeat; position: absolute; height: 20px; width: 25px; right: 18px;'></div>`;
-                const build = `<div style='background-image: url(https://raw.githubusercontent.com/vitor-gabriel/ModernBot/main/img/hammer_only.png); background-size: 19px 19px; margin: 1px; background-repeat: no-repeat; position: absolute; height: 20px; width: 25px; right: 18px;'></div>`;
-                const troop = `<div style='background-image: url(https://raw.githubusercontent.com/vitor-gabriel/ModernBot/main/img/wrench.png); background-size: 19px 19px; margin: 1px; background-repeat: no-repeat; position: absolute; height: 20px; width: 25px; right: 18px;'></div>`;
+                const both = `<div style='position: absolute; background-image: url(https://raw.githubusercontent.com/Sau1707/ModernBot/main/img/hammer_wrench.png); background-size: 19px 19px; margin: 1px; background-repeat: no-repeat; position: absolute; height: 20px; width: 25px; right: 18px;'></div>`;
+                const build = `<div style='background-image: url(https://raw.githubusercontent.com/Sau1707/ModernBot/main/img/hammer_only.png); background-size: 19px 19px; margin: 1px; background-repeat: no-repeat; position: absolute; height: 20px; width: 25px; right: 18px;'></div>`;
+                const troop = `<div style='background-image: url(https://raw.githubusercontent.com/Sau1707/ModernBot/main/img/wrench.png); background-size: 19px 19px; margin: 1px; background-repeat: no-repeat; position: absolute; height: 20px; width: 25px; right: 18px;'></div>`;
                 const townIds = Object.keys(uw.modernBot.autoBuild.towns_buildings);
                 const troopsIds = uw.modernBot.autoTrain.getActiveList().map(entry => entry.toString());
                 uw.$('.town_group_town').each(function () {
@@ -3987,20 +3941,12 @@ class ModernBot {
 
         return $middle
     }
-
 }
 
+// Load the bot when the loader is ready
 const loader = setInterval(() => {
     if ($("#loader").length > 0) return;
-    clearInterval(loader);
-
     uw.modernBot = new ModernBot();
-    uw.modernBot.enableListeners();
-
-    setInterval(() => {
-        uw.modernBot.loop();
-    }, 250);
-
-}, Math.round((Math.random() * (8 - 3) + 3)) * 1000);
-
+    clearInterval(loader);
+}, 100);
 })();
