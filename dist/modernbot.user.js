@@ -3322,10 +3322,10 @@ class AutoTrain extends ModernUtil {
         }
     };
 
-    castSpell = (type, town_id) => {
+    castSpell = async (type, town_id) => {
 
-        if (uw.ITowns.player_gods.attributes.hera_favor < 80) return;
-        if (uw.ITowns.player_gods.attributes.poseidon_favor < 60) return;
+        if (type === 'ground' && uw.ITowns.player_gods.attributes.hera_favor < 80) return;
+        if (type === 'naval' && uw.ITowns.player_gods.attributes.poseidon_favor < 60) return;
 
         const { fragments } = uw.MM.getFirstTownAgnosticCollectionByName('CastedPowers');
         const { models } = fragments[town_id];
@@ -3360,6 +3360,7 @@ class AutoTrain extends ModernUtil {
                 uw.gpAjax.ajaxPost('frontend_bridge', 'execute', data);
             }
         });
+        await this.sleep(500);
     }
 
     /* Return list of town that have power active */
